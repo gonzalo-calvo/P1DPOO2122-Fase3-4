@@ -1,11 +1,6 @@
 package Presentation;
 
-import java.sql.SQLOutput;
-import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Scanner;
-import Business.MenuController;
-import Business.Trial;
 
 
 public class MenuView {

@@ -31,7 +31,7 @@ public class ExecutionManager {
 
         while (editionToExecute.getNumTrials()>editionToExecute.getTrialExecuting() && continueExecution.equals("yes") && editionToExecute.isAnyoneAlive()){
 
-            System.out.println("\nTrial #" + (editionToExecute.getTrialExecuting()+1) + " - " + editionToExecute.getTrials().get(editionToExecute.getTrialExecuting()).getTrialName() + "\n");
+            //System.out.println("\nTrial #" + (editionToExecute.getTrialExecuting()+1) + " - " + editionToExecute.getTrials().get(editionToExecute.getTrialExecuting()).getTrialName() + "\n");
 
             for (int i = 0; i < editionToExecute.getNumPlayers(); i++) {
                 if (editionToExecute.getPlayerList().get(i).isAlive()) {

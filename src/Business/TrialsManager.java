@@ -1,57 +1,164 @@
 package Business;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class TrialsManager {
 
-    private ArrayList<Trial> trials;
+    private ArrayList<Trial> trialList;
+
+    /*private ArrayList<PaperSubmissionTrial> paperSubmissionTrials;
+    private ArrayList<MasterStudiesTrial> masterStudiesTrials;
+    private ArrayList<DoctoralThesisDefenseTrial> doctoralThesisDefenseTrials;
+    private ArrayList<BudgetRequestTrial> budgetRequestTrials;*/
+
     File file = new File("TrialList.csv");
 
     public TrialsManager() {
-        this.trials = new ArrayList<>();
+        this.trialList = new ArrayList<>();
         //trials.add(new Trial("Submitting to OOPD", "Observatory Of Programming Developments", 2, 20, 50, 30));
         //trials.add(new Trial("Publishing to APDS", "Observatory Of Programming Developments", 4, 40, 40, 20));
         //trials.add(new Trial("Submitting to LSJournal", "Observatory Of Programming Developments", 3, 35, 25, 40));
     }
 
     public ArrayList<Trial> getTrialList() {
-        return trials;
+        return trialList;
     }
 
     public void setTrialList(ArrayList<Trial> trialList) {
-        this.trials = trialList;
+        this.trialList = trialList;
     }
 
     public void createTrial(){
 
-        Trial trial = new Trial();
-        Scanner scanner = new Scanner(System.in);
+        int trialType;
 
-        boolean trial_exists, check=false;
-        int revision, rejection, acceptance,quartile;
-        String journal_name, trial_name, sc;
 
         System.out.println("    --- Trial types ---\n");
-        System.out.println("    1) Paper publication\n");
+        System.out.println("    1) Paper publication");
+        System.out.println("    2) Master studies");
+        System.out.println("    3) Doctoral thesis defense");
+        System.out.println("    4) Budget request\n");
 
-        // TRIAL NAME
+        trialType = askUserOptionBetweenNumbers("Enter the trial’s type: " ,1,4);
+
+        switch (trialType) {
+            case 1 -> trialList.add(fillNewPaperSubmissionTrial());
+            case 2 -> trialList.add(fillNewMasterStudiesTrial());
+            case 3 -> trialList.add(fillNewDoctoralThesisDefenseTrial());
+            case 4 -> trialList.add(fillNewBudgetRequestTrial());
+            default -> System.out.println("The option is not valid");
+        }
+
+        System.out.println("The trial was created successfully!");
+
+
+
+
+
+    }
+
+    private Trial fillNewBudgetRequestTrial() {
+        BudgetRequestTrial budgetRequestTrial = new BudgetRequestTrial();
+
+        Scanner scanner = new Scanner(System.in);
+        boolean trial_exists;
+        String trial_name, journal_name;
+
+        //SET TYPE
+        budgetRequestTrial.setType(4);
+
+        //FIELD OF STUDY
         do {
             trial_exists = false;
             System.out.print("Enter the trial's name: ");
             trial_name = scanner.nextLine();
-            for (int i = 0; i < trials.size(); i++) {
-                if (trials.get(i).getTrialName().equals(trial_name)){
-                    System.out.println("\nTrial already exists, try again. \n");
-                    trial_exists = true;
-                }
+            if (budgetRequestTrial.name.equals(trial_name)){
+                trial_exists=true;
             }
         }while (trial_exists);
-        trial.setTrialName(trial_name);
+        budgetRequestTrial.setName(trial_name);
+
+
+        //NAME OF ENTITY
+        do {
+            System.out.print("Enter the entity’s name: ");
+            journal_name = scanner.nextLine();
+            if (journal_name == null || journal_name.isEmpty()) {
+                System.out.println("\nName of entity is wrong, try again.\n");
+            }
+        }while(journal_name == null || journal_name.isEmpty());
+        budgetRequestTrial.setEntityName(journal_name);
+
+        //AMOUNT OF MONEY
+        budgetRequestTrial.setMoneyAmount(askUserOptionBetweenNumbers("Enter the defense difficulty: " , 1000,2000000000));
+
+        return budgetRequestTrial;
+    }
+
+    private Trial fillNewDoctoralThesisDefenseTrial() {
+        DoctoralThesisDefenseTrial doctoralThesisDefenseTrial = new DoctoralThesisDefenseTrial();
+
+        Scanner scanner = new Scanner(System.in);
+        boolean trial_exists;
+        String trial_name, journal_name;
+
+        //SET TYPE
+        doctoralThesisDefenseTrial.setType(3);
+
+        //FIELD OF STUDY
+        do {
+            trial_exists = false;
+            System.out.print("Enter the trial's name: ");
+            trial_name = scanner.nextLine();
+            if (doctoralThesisDefenseTrial.name.equals(trial_name)){
+                trial_exists=true;
+            }
+        }while (trial_exists);
+        doctoralThesisDefenseTrial.setName(trial_name);
+
+
+        // JOURNAL NAME
+        do {
+            System.out.print("Enter the thesis field of study: ");
+            journal_name = scanner.nextLine();
+            if (journal_name == null || journal_name.isEmpty()) {
+                System.out.println("\nJournal's name is wrong, try again.\n");
+            }
+        }while(journal_name == null || journal_name.isEmpty());
+        doctoralThesisDefenseTrial.setFieldOfStudy(journal_name);
+
+        //DEFENSE DIFFICULTY
+        doctoralThesisDefenseTrial.setDifficulty(askUserOptionBetweenNumbers("Enter the defense difficulty: " , 1,10));
+
+        return doctoralThesisDefenseTrial;
+    }
+
+    private PaperPublicationTrial fillNewPaperSubmissionTrial(){
+
+        PaperPublicationTrial paperPublicationTrial = new PaperPublicationTrial();
+
+        Scanner scanner = new Scanner(System.in);
+        boolean trial_exists, validate;
+        String trial_name, journal_name, quartile;
+        int acceptance, revision, rejection;
+
+
+        //SET TYPE
+        paperPublicationTrial.setType(1);
+
+        //TRIAL NAME
+        do {
+            trial_exists = false;
+            System.out.print("Enter the trial's name: ");
+            trial_name = scanner.nextLine();
+            if (paperPublicationTrial.name.equals(trial_name)){
+                trial_exists=true;
+            }
+        }while (trial_exists);
+        paperPublicationTrial.setName(trial_name);
+
 
         // JOURNAL NAME
         do {
@@ -61,24 +168,29 @@ public class TrialsManager {
                 System.out.println("\nJournal's name is wrong, try again.\n");
             }
         }while(journal_name == null || journal_name.isEmpty());
-        trial.setPublicationName(journal_name);
+        paperPublicationTrial.setJournalName(journal_name);
 
-        // JOURNAL QUARTILE
+
+        // QUARTILE
         do {
+            validate=false;
             System.out.print("Enter the journal’s quartile: ");
-            sc = scanner.nextLine();
+            quartile = scanner.nextLine();
 
-            if (!sc.equals("Q1") && !sc.equals("Q2") && !sc.equals("Q3") && !sc.equals("Q4")){
+            if (!quartile.equals("Q1") && !quartile.equals("Q2") && !quartile.equals("Q3") && !quartile.equals("Q4")){
                 System.out.println("\nWrong quartile, try again.\n");
-                check=false;
             } else  {
-                check =true;
+                switch (quartile) {
+                    case "Q1" -> paperPublicationTrial.setQuartile(1);
+                    case "Q2" -> paperPublicationTrial.setQuartile(2);
+                    case "Q3" -> paperPublicationTrial.setQuartile(3);
+                    case "Q4" -> paperPublicationTrial.setQuartile(4);
+                    default -> throw new IllegalStateException("Unexpected value: " + quartile);
+                }
+                validate=true;
             }
 
-        }while (!check);
-
-        trial.setQuartile(getValueFromQuartile(sc));
-        //System.out.println(trial.getQuartile());
+        }while (validate);
 
         // PERCENTAGES
         do {
@@ -91,48 +203,187 @@ public class TrialsManager {
             }
 
         } while (acceptance + revision + rejection != 100);
-        trial.setAcceptanceProbability(acceptance);
-        trial.setRevisionProbability(revision);
-        trial.setRejectionProbability(rejection);
+        paperPublicationTrial.setAcceptanceProbability(acceptance);
+        paperPublicationTrial.setRevisionProbability(revision);
+        paperPublicationTrial.setRejectionProbability(rejection);
 
-        trials.add(trial);
+        return paperPublicationTrial;
     }
 
-    private int getValueFromQuartile(String sc) {
-        return switch (sc) {
-            case "Q1" -> 1;
-            case "Q2" -> 2;
-            case "Q3" -> 3;
-            case "Q4" -> 4;
-            default -> -1;
-        };
+
+    private MasterStudiesTrial fillNewMasterStudiesTrial() {
+
+        MasterStudiesTrial masterStudiesTrial = new MasterStudiesTrial();
+
+        Scanner scanner = new Scanner(System.in);
+        String masterName;
+
+        //SET TYPE
+        masterStudiesTrial.setType(2);
+
+        //TRIAL NAME
+        boolean trial_exists;
+        String trial_name;
+
+        do {
+            trial_exists = false;
+            System.out.print("Enter the trial's name: ");
+            trial_name = scanner.nextLine();
+            if (masterStudiesTrial.name.equals(trial_name)){
+                trial_exists=true;
+            }
+        }while (trial_exists);
+        masterStudiesTrial.setName(trial_name);
+
+        //MASTER NAME
+        do {
+            System.out.println("Enter the master's name: ");
+            masterName = scanner.nextLine();
+            if (masterName == null || masterName.isEmpty()) {
+                System.out.println("\nJournal's name is wrong, try again.\n");
+            }
+
+        }while (masterName == null || masterName.isEmpty());
+        masterStudiesTrial.setMasterName(masterName);
+
+        //ECTS NUMBER
+        masterStudiesTrial.setCreditNum(askUserOptionBetweenNumbers("Enter the Master's ECTS number: ", 60, 120));
+
+        //CREDIT PASS PROBABILITY
+        masterStudiesTrial.setPassProbability(askUserOptionBetweenNumbers("Enter the credit pass probability: ", 0,100));
+
+        return masterStudiesTrial;
+
+    }
+
+    public String getTrialName( int trialType){
+
+        Scanner scanner = new Scanner(System.in);
+        boolean trial_exists;
+        String trial_name;
+        do {
+            trial_exists = false;
+            System.out.print("Enter the trial's name: ");
+            trial_name = scanner.nextLine();
+
+            for (Trial trial : trialList) {
+
+                if (trial.getType() == 1) {
+                    PaperPublicationTrial paperPublicationTrial = (PaperPublicationTrial) trial;
+                    if (paperPublicationTrial.name.equals(trial_name)){
+                        trial_exists=true;
+                    }
+                } else if (trial.getType() == 2) {
+                    MasterStudiesTrial masterStudiesTrial = (MasterStudiesTrial) trial;
+                    if (masterStudiesTrial.name.equals(trial_name)){
+                        trial_exists=true;
+                    }
+                } else if (trial.getType() == 3) {
+                    DoctoralThesisDefenseTrial doctoralThesisDefenseTrial = (DoctoralThesisDefenseTrial) trial;
+                    if (doctoralThesisDefenseTrial.name.equals(trial_name)){
+                        trial_exists=true;
+                    }
+                } else if (trial.getType() == 4) {
+                    BudgetRequestTrial budgetRequestTrial = (BudgetRequestTrial) trial;
+                    if (budgetRequestTrial.name.equals(trial_name)){
+                        trial_exists=true;
+                    }
+                }
+            }
+
+        }while (trial_exists);
+
+        return trial_name;
+    }
+
+    public String getJournalName(){
+
+        Scanner scanner = new Scanner(System.in);
+        String journal_name;
+
+        do {
+            System.out.print("Enter the journal’s name: ");
+            journal_name = scanner.nextLine();
+            if (journal_name == null || journal_name.isEmpty()) {
+                System.out.println("\nJournal's name is wrong, try again.\n");
+            }
+        }while(journal_name == null || journal_name.isEmpty());
+
+        return journal_name;
+
+    }
+
+    public int getJournalQuartile(){
+
+        Scanner scanner = new Scanner(System.in);
+        String quartile;
+
+        do {
+            System.out.print("Enter the journal’s quartile: ");
+            quartile = scanner.nextLine();
+
+            if (!quartile.equals("Q1") && !quartile.equals("Q2") && !quartile.equals("Q3") && !quartile.equals("Q4")){
+                System.out.println("\nWrong quartile, try again.\n");
+
+            } else  {
+                return switch (quartile) {
+                    case "Q1" -> 1;
+                    case "Q2" -> 2;
+                    case "Q3" -> 3;
+                    case "Q4" -> 4;
+                    default -> -1;
+                };
+            }
+
+        }while (true);
+
+
     }
 
     public void listTrials (){
 
         int option;
 
-        if (trials.isEmpty()){
+        if (trialList.isEmpty()){
             System.out.println("\nThere are no trials currently.");
         }else {
             System.out.println("\nHere are the current trials, do you want to see more details or go back?\n");
 
-            for (int i = 0; i < trials.size(); i++) {
-                System.out.println(i + 1 + ") " + trials.get(i).getTrialName());
+            for (int i = 0; i < trialList.size(); i++) {
+                System.out.println(i + 1 + ") " + trialList.get(i).getName());
             }
             System.out.println();
-            System.out.println(trials.size()+1 + ") Back");
+            System.out.println(trialList.size()+1 + ") Back");
             System.out.println();
 
-            option = askUserOptionBetweenNumbers("Enter an option: ", 1, trials.size() + 1);
+            option = askUserOptionBetweenNumbers("Enter an option: ", 1, trialList.size() + 1);
 
             System.out.println(option);
-            System.out.println("Trial size: " + trials.size());
+            System.out.println("Trial size: " + trialList.size());
 
-            if (option >= 1 && option <= trials.size()){
-                System.out.println("\nTrial: " + trials.get(option - 1).getTrialName());
-                System.out.println("Journal: " + trials.get(option - 1).getPublicationName() + " (" + trials.get(option - 1).getQuartile() + ")");
-                System.out.println("Chances: " + trials.get(option - 1).getAcceptanceProbability() + "% acceptance, " + trials.get(option - 1).getRevisionProbability() + "% revision, " + trials.get(option - 1).getRejectionProbability() + "% rejection\n");
+            if (option >= 1 && option <= trialList.size()){
+                System.out.println("\nTrial: " + trialList.get(option - 1).getName());
+
+                for (Trial trial : trialList) {
+
+                    if (trial.getType() == 1) {
+                        PaperPublicationTrial paperPublicationTrial = (PaperPublicationTrial) trial;
+                        paperPublicationTrial.printDetails();
+                    } else if (trial.getType() == 2) {
+                        MasterStudiesTrial masterStudiesTrial = (MasterStudiesTrial) trial;
+                        masterStudiesTrial.printDetails();
+                    } else if (trial.getType() == 3) {
+                        DoctoralThesisDefenseTrial doctoralThesisDefenseTrial = (DoctoralThesisDefenseTrial) trial;
+                        doctoralThesisDefenseTrial.printDetails();
+                    } else if (trial.getType() == 4) {
+                        BudgetRequestTrial budgetRequestTrial = (BudgetRequestTrial) trial;
+                        budgetRequestTrial.printDetails();
+                    }
+                }
+
+
+
+
             }
 
         }
@@ -143,26 +394,26 @@ public class TrialsManager {
         String trial_deleted;
         Scanner scanner = new Scanner(System.in);
 
-        if (trials.isEmpty()) {
+        if (trialList.isEmpty()) {
             System.out.println("\nThere are no trials currently.");
         } else {
             System.out.println("\nWhich trial do you want to delete?\n");
 
-            for (int i = 0; i < trials.size(); i++) {
-                System.out.println(i + 1 + ") " + trials.get(i).getTrialName());
+            for (int i = 0; i < trialList.size(); i++) {
+                System.out.println(i + 1 + ") " + trialList.get(i).name);
             }
             System.out.println();
-            System.out.println(trials.size() + 1 + ") Back");
+            System.out.println(trialList.size() + 1 + ") Back");
             System.out.println();
 
-            option = askUserOptionBetweenNumbers("Enter an option: ", 1, trials.size() + 1);
+            option = askUserOptionBetweenNumbers("Enter an option: ", 1, trialList.size() + 1);
 
-            if (option >= 1 && option <= trials.size()) {
+            if (option >= 1 && option <= trialList.size()) {
                 System.out.println("Enter the trial’s name for confirmation: ");
                 trial_deleted = scanner.nextLine();
                 //trial_deleted_int = Integer.parseInt(trial_deleted);
-                if (trial_deleted.equals(trials.get(option-1).getTrialName())){
-                    trials.remove(option-1);
+                if (trial_deleted.equals(trialList.get(option-1).name)){
+                    trialList.remove(option-1);
                     System.out.println("The trial was successfully deleted.\n");
                 }else{
                     System.out.println("The trial wasn't deleted, try again.\n");
@@ -195,16 +446,16 @@ public class TrialsManager {
         return option;
     }
 
-    public void loadTrialsListFromCSV(){
+    /*public void loadTrialsListFromCSV(){
 
         try{
 
             Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()){
                 String line = scanner.nextLine();
-                Trial trial = new Trial();
-                trial.setValuesFromCSV(line);
-                trials.add(trial);
+                PaperSubmissionTrial paperSubmissionTrial = new PaperSubmissionTrial();
+                paperSubmissionTrial.setValuesFromCSV(line);
+                paperSubmissionTrials.add(paperSubmissionTrial);
             }
             System.out.println("Trials loaded successfully");
         } catch (FileNotFoundException e){
@@ -216,8 +467,8 @@ public class TrialsManager {
     public void copyTrialsListToCSV(){
         try{
             FileWriter fw = new FileWriter(file, false);
-            for(Trial trial: trials){
-                fw.write(trial.toCSV());
+            for(PaperSubmissionTrial paperSubmissionTrial : paperSubmissionTrials){
+                fw.write(paperSubmissionTrial.toCSV());
                 fw.write(System.lineSeparator());
             }
             fw.close();
@@ -225,5 +476,7 @@ public class TrialsManager {
             System.out.println(e);
         }
     }
+
+     */
 
 }

@@ -9,23 +9,26 @@ import java.util.Scanner;
 
 public class EditionsManager {
 
-    private final ArrayList<Trial> trialsList;
-    private final ArrayList<Edition> editionsList;
+    private ArrayList<Trial> trialsList;
+
+
+    private ArrayList<Edition> editionsList;
     File file = new File("EditionList.csv");
 
     public EditionsManager(ArrayList<Trial> trialsList) {
         this.trialsList = trialsList;
-        this.editionsList = new ArrayList<>();
-        ArrayList<Trial> trialForNextEdition = new ArrayList<>();
-        trialForNextEdition.add(trialsList.get(0));
-        trialForNextEdition.add(trialsList.get(2));
-        trialForNextEdition.add(trialsList.get(0));
-        editionsList.add(new Edition(2022, 5, 3, trialForNextEdition, new ArrayList<>(),0));
     }
 
-
-    public ArrayList<Trial> getTrialsList() {
+    public ArrayList<Trial> getTrialMainList() {
         return trialsList;
+    }
+
+    public void setTrialsList(ArrayList<Trial> trialsList) {
+        this.trialsList = trialsList;
+    }
+
+    public void setEditionsList(ArrayList<Edition> editionsList) {
+        this.editionsList = editionsList;
     }
 
     public ArrayList<Edition> getEditionsList() {
@@ -35,7 +38,7 @@ public class EditionsManager {
     public void createEdition() {
 
         Edition edition = new Edition();
-        ArrayList<Trial> trials = new ArrayList<Trial>();
+        ArrayList<PaperPublicationTrial> paperPublicationTrials = new ArrayList<PaperPublicationTrial>();
         int year, num_players, num_trials;
         boolean error = false;
 
@@ -61,14 +64,13 @@ public class EditionsManager {
         System.out.println("\n     --- Trials ---\n");
 
         for (int i = 0; i < trialsList.size(); i++) {
-            System.out.println( (i+1) + ") " + trialsList.get(i).getTrialName());
-
+            System.out.println( (i+1) + ") " + trialsList.get(i).name);
         }
 
         for (int i = 0; i < num_trials; i++) {
             int trial = askUserOptionBetweenNumbers("Pick a trial (" + (i+1) + "/" + num_trials + "): " , 1, trialsList.size());
             //trials.add(trialsList.get(trial-1));
-            edition.getTrials().add(trialsList.get(trial-1));
+            //edition.getTrials().add(trialsList.get(trial-1)); --> ESTA ES LA QUE FUNCIONA
             //((ArrayList<Trial>)((Edition) edition).getTrials()).add(trialsList.get(trial-1));
             //edition.getTrials().clone();
         }
@@ -162,7 +164,7 @@ public class EditionsManager {
     }
 
     public void cloneEdition(Edition edition, int year, int numPlayers){
-        ArrayList<Trial> trialsClone = new ArrayList<>();
+        ArrayList<PaperPublicationTrial> trialsClone = new ArrayList<>();
         /*
         for(Trial trial:edition.getTrials()){
             trialsClone.add(trial);
@@ -256,4 +258,5 @@ public class EditionsManager {
             System.out.println("Error with file, couldn't load trials");
         }
     }
+
 }

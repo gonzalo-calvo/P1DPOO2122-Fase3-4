@@ -1,6 +1,5 @@
 package Business;
 
-import java.io.File;
 import java.util.ArrayList;
 
 public class Edition {
@@ -9,20 +8,20 @@ public class Edition {
     private int numPlayers;
     private int numTrials;
     private int trialExecuting=0;
-    private ArrayList<Trial> trials;
+    private ArrayList<PaperPublicationTrial> paperPublicationTrials;
     private ArrayList<Player> playerList;
 
-    public Edition(int editionYear, int numPlayers, int numTrials, ArrayList<Trial> trials, ArrayList<Player> playerList, int trialExecuting) {
+    public Edition(int editionYear, int numPlayers, int numTrials, ArrayList<PaperPublicationTrial> paperPublicationTrials, ArrayList<Player> playerList, int trialExecuting) {
         this.editionYear = editionYear;
         this.numPlayers = numPlayers;
         this.numTrials = numTrials;
-        this.trials = trials;
+        this.paperPublicationTrials = paperPublicationTrials;
         this.playerList = playerList;
         this.trialExecuting = trialExecuting;
     }
 
     public Edition() {
-        this.trials = new ArrayList<>();
+        this.paperPublicationTrials = new ArrayList<>();
         this.playerList = new ArrayList<>();
     }
 
@@ -66,12 +65,12 @@ public class Edition {
         this.numTrials = numTrials;
     }
 
-    public ArrayList<Trial> getTrials() {
-        return trials;
+    public ArrayList<PaperPublicationTrial> getTrials() {
+        return paperPublicationTrials;
     }
 
-    public void setTrials(ArrayList<Trial> trials) {
-        this.trials = trials;
+    public void setTrials(ArrayList<PaperPublicationTrial> paperPublicationTrials) {
+        this.paperPublicationTrials = paperPublicationTrials;
     }
 
     public void printDetails(){
@@ -79,7 +78,7 @@ public class Edition {
         System.out.println("Players: " + numPlayers);
 
         for (int i = 0; i < numTrials; i++) {
-            System.out.println("    " + (i+1) + "- " + trials.get(i).getTrialNameDetail());
+            System.out.println("    " + (i+1) + "- " + paperPublicationTrials.get(i).getTrialNameDetail());
         }
 
     }
@@ -128,15 +127,15 @@ public class Edition {
     public String trialsListToCSV(){
         StringBuilder stringTrials = new StringBuilder();
 
-        if (trials.size()==0){
+        if (paperPublicationTrials.size()==0){
             return stringTrials.toString();
         }
 
-        for (int i = 0; i < trials.size(); i++) {
-            if (i==trials.size()-1){
-                stringTrials.append(trials.get(i).toCSV());
+        for (int i = 0; i < paperPublicationTrials.size(); i++) {
+            if (i== paperPublicationTrials.size()-1){
+                stringTrials.append(paperPublicationTrials.get(i).toCSV());
             } else {
-                stringTrials.append(trials.get(i).toCSV()).append(":");
+                stringTrials.append(paperPublicationTrials.get(i).toCSV()).append(":");
             }
         }
         return stringTrials.toString();
@@ -162,9 +161,9 @@ public class Edition {
 
         String[] trialValues = values[4].split(":");
         for (int i = 0; i < trialValues.length; i++) {
-            Trial trial = new Trial();
-            trial.setValuesFromCSV(trialValues[i]);
-            trials.add(trial);
+            PaperPublicationTrial paperPublicationTrial = new PaperPublicationTrial();
+            paperPublicationTrial.setValuesFromCSV(trialValues[i]);
+            paperPublicationTrials.add(paperPublicationTrial);
         }
 
         trialExecuting = Integer.parseInt(values[5]);
