@@ -14,7 +14,7 @@ public class MenuController {
     public MenuController() {
         menuView = new MenuView();
         trialsManager = new TrialsManager();
-        //trialsManager.loadTrialsListFromCSV();
+        trialsManager.loadTrialsListFromCSV();
         editionsManager = new EditionsManager(trialsManager.getTrialList());
         //editionsManager.loadEditionsListFromCSV();
         executionManager = new ExecutionManager();
@@ -43,7 +43,7 @@ public class MenuController {
                 }
 
             }while (option != 3);
-            //trialsManager.copyTrialsListToCSV();
+            trialsManager.copyTrialsListToCSV();
             //editionsManager.copyEditionsListToCSV();
 
             System.out.println("\nShutting down...");

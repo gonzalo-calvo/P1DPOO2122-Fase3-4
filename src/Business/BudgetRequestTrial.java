@@ -41,6 +41,7 @@ public class BudgetRequestTrial extends Trial{
     public String toCSV(){
         return "4_" + name + "_" + entityName + "_" + moneyAmount;
     }
+
     public void printDetails(){
         System.out.println("Trial: " + this.name + "(Budget request)");
         System.out.println("Entity: " + this.entityName);
