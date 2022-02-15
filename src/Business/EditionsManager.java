@@ -11,7 +11,6 @@ public class EditionsManager {
 
     private ArrayList<Trial> trialsList;
 
-
     private ArrayList<Edition> editionsList;
     File file = new File("EditionList.csv");
 
@@ -19,7 +18,7 @@ public class EditionsManager {
         this.trialsList = trialsList;
     }
 
-    public ArrayList<Trial> getTrialMainList() {
+    public ArrayList<Trial> getTrialsList() {
         return trialsList;
     }
 
@@ -38,7 +37,7 @@ public class EditionsManager {
     public void createEdition() {
 
         Edition edition = new Edition();
-        ArrayList<PaperPublicationTrial> paperPublicationTrials = new ArrayList<PaperPublicationTrial>();
+        //ArrayList<PaperPublicationTrial> paperPublicationTrials = new ArrayList<PaperPublicationTrial>();
         int year, num_players, num_trials;
         boolean error = false;
 
@@ -205,10 +204,6 @@ public class EditionsManager {
             System.out.println("Player PI: " + editionsList.get(aux).getPlayerList().get(i).getInvestigationPoints());
             System.out.println("Is alive? " + editionsList.get(aux).getPlayerList().get(i).isAlive());
         }
-
-
-
-
     }
 
 

@@ -18,7 +18,6 @@ public class MenuController {
         editionsManager = new EditionsManager(trialsManager.getTrialList());
         //editionsManager.loadEditionsListFromCSV();
         executionManager = new ExecutionManager();
-
     }
 
     public void start (){
@@ -27,7 +26,6 @@ public class MenuController {
 
         if (role == 'A'){
             // COMPOSER
-
             int option;
 
             do {
@@ -65,15 +63,12 @@ public class MenuController {
             }
 
             if (foundEdition) {
-
                 executionManager.executeEdition(editionsManager.getEditionsList().get(editionId));
             } else {
                 System.out.println("No edition is defined for the current year (" + year + ").");
             }
 
-
-            editionsManager.copyEditionsListToCSV();
-
+            //editionsManager.copyEditionsListToCSV();
         }
     }
 

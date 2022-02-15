@@ -15,11 +15,6 @@ public class TrialsManager {
 
     public TrialsManager() {
         this.trialList = new ArrayList<>();
-        //trials.add(new Trial("Submitting to OOPD", "Observatory Of Programming Developments", 2, 20, 50, 30));
-        //trials.add(new Trial("Publishing to APDS", "Observatory Of Programming Developments", 4, 40, 40, 20));
-        //trialList.add(new Trial("Submitting to LSJournal", "Observatory Of Programming Developments", 3, 35, 25, 40));
-
-
     }
 
     public ArrayList<Trial> getTrialList() {
@@ -33,7 +28,6 @@ public class TrialsManager {
     public void createTrial(){
 
         int trialType;
-
 
         System.out.println("    --- Trial types ---\n");
         System.out.println("    1) Paper publication");
@@ -106,7 +100,6 @@ public class TrialsManager {
         }while (trial_exists || trial_name == null || trial_name.isEmpty());
         budgetRequestTrial.setName(trial_name);
 
-
         //NAME OF ENTITY
         do {
             System.out.print("Enter the entity’s name: ");
@@ -143,7 +136,6 @@ public class TrialsManager {
             }
         }while (trial_exists);
         doctoralThesisDefenseTrial.setName(trial_name);
-
 
         // JOURNAL NAME
         do {
@@ -233,7 +225,6 @@ public class TrialsManager {
         return paperPublicationTrial;
     }
 
-
     private MasterStudiesTrial fillNewMasterStudiesTrial() {
 
         MasterStudiesTrial masterStudiesTrial = new MasterStudiesTrial();
@@ -319,9 +310,7 @@ public class TrialsManager {
                         budgetRequestTrial.printDetails();
                     }
                 }
-
             }
-
         }
     }
 
@@ -427,10 +416,10 @@ public class TrialsManager {
 
 
     public void copyTrialsListToCSV(){
+
         try{
             FileWriter fw = new FileWriter(file, false);
-            for (int i = 0, trialListSize = trialList.size(); i < trialListSize; i++) {
-                Trial trial = trialList.get(i);
+            for (Trial trial : trialList) {
                 if (trial.getType() == 1) {
                     PaperPublicationTrial paperPublicationTrial = (PaperPublicationTrial) trial;
                     fw.write(paperPublicationTrial.toCSV());
