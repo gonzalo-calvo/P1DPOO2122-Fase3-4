@@ -5,11 +5,13 @@ public class Player {
     private String name;
     private boolean alive;
     private int investigationPoints;
+    private int level;
 
-    public Player(String name, boolean alive, int investigationPoints) {
+    public Player(String name, boolean alive, int investigationPoints, int level) {
         this.name = name;
         this.alive = alive;
         this.investigationPoints = investigationPoints;
+        this.level = level;
     }
 
     public Player() {
@@ -39,6 +41,14 @@ public class Player {
         this.investigationPoints = investigationPoints;
     }
 
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
     public String toCSV(){
         return name + "-" + investigationPoints + "-" + alive;
     }
@@ -51,13 +61,11 @@ public class Player {
         //System.out.println("Before: " + setTrueFalseFromString(values[2]));
         alive = setTrueFalseFromString(values[2]);
         //System.out.println("After: " + alive);
+        level = Integer.parseInt(values[3]);
     }
 
     public boolean setTrueFalseFromString(String line){
-        return switch (line) {
-            case "true" -> true;
-            default -> false;
-        };
+        return line.equals("true");
     }
 
 }

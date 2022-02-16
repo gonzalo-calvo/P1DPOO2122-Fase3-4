@@ -29,7 +29,7 @@ public class TrialsManager {
 
         int trialType;
 
-        System.out.println("    --- Trial types ---\n");
+        System.out.println("\n    --- Trial types ---\n");
         System.out.println("    1) Paper publication");
         System.out.println("    2) Master studies");
         System.out.println("    3) Doctoral thesis defense");
@@ -45,7 +45,7 @@ public class TrialsManager {
             default -> System.out.println("The option is not valid");
         }
 
-        System.out.println("The trial was created successfully!");
+        System.out.println("\nThe trial was created successfully!");
 
     }
 
@@ -91,7 +91,7 @@ public class TrialsManager {
         //FIELD OF STUDY
         do {
             trial_exists = false;
-            System.out.print("Enter the trial's name: ");
+            System.out.print("\nEnter the trial's name: ");
             trial_name = scanner.nextLine();
             if (compareIfTrialInTrialList(trial_name)){
                 trial_exists=true;
@@ -129,9 +129,10 @@ public class TrialsManager {
         //FIELD OF STUDY
         do {
             trial_exists = false;
-            System.out.print("Enter the trial's name: ");
+            System.out.print("\nEnter the trial's name: ");
             trial_name = scanner.nextLine();
             if (compareIfTrialInTrialList(trial_name)){
+                System.out.println("The trial's name already exists, introduce a different one");
                 trial_exists=true;
             }
         }while (trial_exists);
@@ -148,7 +149,7 @@ public class TrialsManager {
         doctoralThesisDefenseTrial.setFieldOfStudy(journal_name);
 
         //DEFENSE DIFFICULTY
-        doctoralThesisDefenseTrial.setDifficulty(askUserOptionBetweenNumbers("Enter the defense difficulty: " , 1,10));
+        doctoralThesisDefenseTrial.setDifficulty(askUserOptionBetweenNumbers("Enter the defense difficulty [1-10]: " , 1,10));
 
         return doctoralThesisDefenseTrial;
     }
@@ -192,9 +193,7 @@ public class TrialsManager {
             System.out.print("Enter the journal’s quartile: ");
             quartile = scanner.nextLine();
 
-            if (!quartile.equals("Q1") && !quartile.equals("Q2") && !quartile.equals("Q3") && !quartile.equals("Q4")){
-                System.out.println("\nWrong quartile, try again.\n");
-            } else  {
+            if (quartile.equals("Q1") || quartile.equals("Q2") || quartile.equals("Q3") || quartile.equals("Q4")){
                 switch (quartile) {
                     case "Q1" -> paperPublicationTrial.setQuartile(1);
                     case "Q2" -> paperPublicationTrial.setQuartile(2);
@@ -203,15 +202,17 @@ public class TrialsManager {
                     default -> throw new IllegalStateException("Unexpected value: " + quartile);
                 }
                 validate=true;
+            } else  {
+                System.out.println("\nWrong quartile, try again.\n");
             }
 
         }while (validate);
 
         // PERCENTAGES
         do {
-            acceptance = askUserOptionBetweenNumbers("Enter the acceptance probability: ", 0, 100);
-            revision = askUserOptionBetweenNumbers("Enter the revision probability: ", 0, 100);
-            rejection = askUserOptionBetweenNumbers("Enter the rejection probability: ", 0, 100);
+            acceptance = askUserOptionBetweenNumbers("1/3) Enter the acceptance probability [0-100]: ", 0, 100);
+            revision = askUserOptionBetweenNumbers("2/3) Enter the revision probability [0-100]: ", 0, 100);
+            rejection = askUserOptionBetweenNumbers("3/3) Enter the rejection probability [0-100]: ", 0, 100);
 
             if (acceptance + revision + rejection != 100){
                 System.out.println("\nThe percentages aren't correct, try again.\n");
@@ -241,7 +242,7 @@ public class TrialsManager {
 
         do {
             trial_exists = false;
-            System.out.print("Enter the trial's name: ");
+            System.out.print("\nEnter the trial's name: ");
             trial_name = scanner.nextLine();
             if (compareIfTrialInTrialList(trial_name)){
                 trial_exists=true;
@@ -251,7 +252,7 @@ public class TrialsManager {
 
         //MASTER NAME
         do {
-            System.out.println("Enter the master's name: ");
+            System.out.print("Enter the master's name: ");
             masterName = scanner.nextLine();
             if (masterName == null || masterName.isEmpty()) {
                 System.out.println("\nJournal's name is wrong, try again.\n");
@@ -261,10 +262,10 @@ public class TrialsManager {
         masterStudiesTrial.setMasterName(masterName);
 
         //ECTS NUMBER
-        masterStudiesTrial.setCreditNum(askUserOptionBetweenNumbers("Enter the Master's ECTS number: ", 60, 120));
+        masterStudiesTrial.setCreditNum(askUserOptionBetweenNumbers("Enter the Master's ECTS number [60-120]: ", 60, 120));
 
         //CREDIT PASS PROBABILITY
-        masterStudiesTrial.setPassProbability(askUserOptionBetweenNumbers("Enter the credit pass probability: ", 0,100));
+        masterStudiesTrial.setPassProbability(askUserOptionBetweenNumbers("Enter the credit pass probability [0-100%]: ", 0,100));
 
         return masterStudiesTrial;
 
@@ -288,34 +289,28 @@ public class TrialsManager {
 
             option = askUserOptionBetweenNumbers("Enter an option: ", 1, trialList.size() + 1);
 
-            System.out.println(option);
-            System.out.println("Trial size: " + trialList.size());
-
             if (option >= 1 && option <= trialList.size()){
-                System.out.println("\nTrial: " + trialList.get(option - 1).getName());
 
-                for (Trial trial : trialList) {
-
-                    if (trial.getType() == 1) {
-                        PaperPublicationTrial paperPublicationTrial = (PaperPublicationTrial) trial;
-                        paperPublicationTrial.printDetails();
-                    } else if (trial.getType() == 2) {
-                        MasterStudiesTrial masterStudiesTrial = (MasterStudiesTrial) trial;
-                        masterStudiesTrial.printDetails();
-                    } else if (trial.getType() == 3) {
-                        DoctoralThesisDefenseTrial doctoralThesisDefenseTrial = (DoctoralThesisDefenseTrial) trial;
-                        doctoralThesisDefenseTrial.printDetails();
-                    } else if (trial.getType() == 4) {
-                        BudgetRequestTrial budgetRequestTrial = (BudgetRequestTrial) trial;
-                        budgetRequestTrial.printDetails();
-                    }
+                option = option - 1;
+                if (trialList.get(option).getType() == 1) {
+                    PaperPublicationTrial paperPublicationTrial = (PaperPublicationTrial) trialList.get(option);
+                    paperPublicationTrial.printDetails();
+                } else if (trialList.get(option).getType() == 2) {
+                    MasterStudiesTrial masterStudiesTrial = (MasterStudiesTrial) trialList.get(option);
+                    masterStudiesTrial.printDetails();
+                } else if (trialList.get(option).getType() == 3) {
+                    DoctoralThesisDefenseTrial doctoralThesisDefenseTrial = (DoctoralThesisDefenseTrial) trialList.get(option);
+                    doctoralThesisDefenseTrial.printDetails();
+                } else if (trialList.get(option).getType() == 4) {
+                    BudgetRequestTrial budgetRequestTrial = (BudgetRequestTrial) trialList.get(option);
+                    budgetRequestTrial.printDetails();
                 }
             }
         }
     }
 
     public void deleteTrials () {
-        int option, trial_deleted_int;
+        int option;
         String trial_deleted;
         Scanner scanner = new Scanner(System.in);
 
@@ -336,7 +331,6 @@ public class TrialsManager {
             if (option >= 1 && option <= trialList.size()) {
                 System.out.println("Enter the trial’s name for confirmation: ");
                 trial_deleted = scanner.nextLine();
-                //trial_deleted_int = Integer.parseInt(trial_deleted);
                 if (trial_deleted.equals(trialList.get(option-1).name)){
                     trialList.remove(option-1);
                     System.out.println("The trial was successfully deleted.\n");

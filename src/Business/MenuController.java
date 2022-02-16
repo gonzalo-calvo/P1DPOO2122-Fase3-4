@@ -13,10 +13,21 @@ public class MenuController {
 
     public MenuController() {
         menuView = new MenuView();
+
         trialsManager = new TrialsManager();
-        trialsManager.loadTrialsListFromCSV();
+        try{
+            trialsManager.loadTrialsListFromCSV();
+        } catch (Exception e){
+            System.out.println("Couldn't load list of trials");
+        }
+
         editionsManager = new EditionsManager(trialsManager.getTrialList());
-        //editionsManager.loadEditionsListFromCSV();
+        try{
+            editionsManager.loadEditionsListFromCSV();
+        } catch (Exception e){
+            System.out.println("Couldn't load list of trials");
+        }
+
         executionManager = new ExecutionManager();
     }
 
@@ -39,12 +50,9 @@ public class MenuController {
                     // MANGE EDITIONS
                     manageEditions();
                 }
-
             }while (option != 3);
             trialsManager.copyTrialsListToCSV();
-            //editionsManager.copyEditionsListToCSV();
-
-            System.out.println("\nShutting down...");
+            editionsManager.copyEditionsListToCSV();
 
         }else if (role == 'B'){
             // Conductor
@@ -67,9 +75,9 @@ public class MenuController {
             } else {
                 System.out.println("No edition is defined for the current year (" + year + ").");
             }
-
-            //editionsManager.copyEditionsListToCSV();
+            editionsManager.copyEditionsListToCSV();
         }
+        System.out.println("\nShutting down...");
     }
 
     public void manageTrials(){

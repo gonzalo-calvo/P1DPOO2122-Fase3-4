@@ -10,8 +10,7 @@ import java.util.Scanner;
 public class EditionsManager {
 
     private ArrayList<Trial> trialsList;
-
-    private ArrayList<Edition> editionsList;
+    private ArrayList<Edition> editionsList = new ArrayList<>();
     File file = new File("EditionList.csv");
 
     public EditionsManager(ArrayList<Trial> trialsList) {
@@ -26,18 +25,19 @@ public class EditionsManager {
         this.trialsList = trialsList;
     }
 
-    public void setEditionsList(ArrayList<Edition> editionsList) {
-        this.editionsList = editionsList;
-    }
-
     public ArrayList<Edition> getEditionsList() {
         return editionsList;
     }
 
+    public void setEditionsList(ArrayList<Edition> editionsList) {
+        this.editionsList = editionsList;
+    }
+
+
     public void createEdition() {
 
         Edition edition = new Edition();
-        //ArrayList<PaperPublicationTrial> paperPublicationTrials = new ArrayList<PaperPublicationTrial>();
+        ArrayList<Trial> auxTrial = new ArrayList<>();
         int year, num_players, num_trials;
         boolean error = false;
 
@@ -54,10 +54,10 @@ public class EditionsManager {
         }while (error);
         edition.setEditionYear(year);
 
-        num_players = askUserOptionBetweenNumbers("Enter the initial number of players: ", 1, 5);
+        num_players = askUserOptionBetweenNumbers("Enter the initial number of players [1-5]: ", 1, 5);
         edition.setNumPlayers(num_players);
 
-        num_trials = askUserOptionBetweenNumbers("Enter the number of trials: ", 3, 12);
+        num_trials = askUserOptionBetweenNumbers("Enter the number of trials [3-12]: ", 3, 12);
         edition.setNumTrials(num_trials);
 
         System.out.println("\n     --- Trials ---\n");
@@ -67,12 +67,23 @@ public class EditionsManager {
         }
 
         for (int i = 0; i < num_trials; i++) {
-            int trial = askUserOptionBetweenNumbers("Pick a trial (" + (i+1) + "/" + num_trials + "): " , 1, trialsList.size());
-            //trials.add(trialsList.get(trial-1));
-            //edition.getTrials().add(trialsList.get(trial-1)); --> ESTA ES LA QUE FUNCIONA
-            //((ArrayList<Trial>)((Edition) edition).getTrials()).add(trialsList.get(trial-1));
-            //edition.getTrials().clone();
+            int trial = askUserOptionBetweenNumbers("Pick a trial (" + (i+1) + "/" + num_trials + "): " , 1, trialsList.size())-1;
+
+            if (trialsList.get(trial).getType() == 1) {
+                PaperPublicationTrial paperPublicationTrial = (PaperPublicationTrial) trialsList.get(trial);
+                auxTrial.add(paperPublicationTrial);
+            } else if (trialsList.get(trial).getType() == 2) {
+                MasterStudiesTrial masterStudiesTrial = (MasterStudiesTrial) trialsList.get(trial);
+                auxTrial.add(masterStudiesTrial);
+            } else if (trialsList.get(trial).getType() == 3) {
+                DoctoralThesisDefenseTrial doctoralThesisDefenseTrial = (DoctoralThesisDefenseTrial) trialsList.get(trial);
+                auxTrial.add(doctoralThesisDefenseTrial);
+            } else if (trialsList.get(trial).getType() == 4) {
+                BudgetRequestTrial budgetRequestTrial = (BudgetRequestTrial) trialsList.get(trial);
+                auxTrial.add(budgetRequestTrial);
+            }
         }
+        edition.setEditionsTrialsList(auxTrial);
 
         System.out.println("\nThe edition was created successfully!");
         editionsList.add(edition);
@@ -83,18 +94,22 @@ public class EditionsManager {
 
         int option;
 
-        if (editionsList.size()>=1) {
-            System.out.println("Here are the current editions, do you want to see more details or go back?");
-            printEditions();
-            option = askUserOptionBetweenNumbers("Enter an option: ", 1, editionsList.size()+1) - 1;
-            if (editionsList.size()>option) {
-                editionsList.get(option).printDetails();
-                //Con print Details podemos imprimir toda la info de la edition desde la clase edition misma
+
+            if (editionsList.size()>0) {
+                System.out.println("Here are the current editions, do you want to see more details or go back?");
+                printEditions();
+                option = askUserOptionBetweenNumbers("Enter an option: ", 1, editionsList.size()+1) - 1;
+                if (editionsList.size()>option) {
+                    editionsList.get(option).printDetails();
+                }
+            } else {
+                System.out.println("\nNo editions in the list");
             }
-        } else {
-            System.out.println("No editions in the list");
         }
-    }
+
+
+
+
 
     public void duplicateEditions() {
         int option, yearToClone, numPlayersToClone;
@@ -105,8 +120,8 @@ public class EditionsManager {
         option = askUserOptionBetweenNumbers("Enter an option: ", 1, editionsList.size()+1) - 1;
 
         if (editionsList.get(option).getTrialExecuting()==0) {
-            yearToClone = askUserOptionBetweenNumbers("Enter the new edition’s year: ", 1, 9999999);
-            numPlayersToClone = askUserOptionBetweenNumbers("Enter the new edition’s initial number of players: ", 1, 5);
+            yearToClone = askUserOptionBetweenNumbers("\nEnter the new edition’s year: ", 1, 9999999);
+            numPlayersToClone = askUserOptionBetweenNumbers("Enter the new edition’s initial number of players [1-5]: ", 1, 5);
 
             cloneEdition(editionsList.get(option), yearToClone, numPlayersToClone);
             System.out.println("The edition was cloned successfully!");
@@ -123,7 +138,7 @@ public class EditionsManager {
         printEditions();
 
         option = askUserOptionBetweenNumbers("Enter an option: ", 1, editionsList.size()+1) - 1;
-        confirmationYear = askUserOptionBetweenNumbers("Enter the edition’s year for confirmation:", 1, 9999999);
+        confirmationYear = askUserOptionBetweenNumbers("\nEnter the edition’s year for confirmation: ", 1, 9999999);
 
         if (confirmationYear == editionsList.get(option).getEditionYear()){
             editionsList.remove(option);
@@ -163,19 +178,10 @@ public class EditionsManager {
     }
 
     public void cloneEdition(Edition edition, int year, int numPlayers){
-        ArrayList<PaperPublicationTrial> trialsClone = new ArrayList<>();
-        /*
-        for(Trial trial:edition.getTrials()){
-            trialsClone.add(trial);
-        }
-        */
-        // CONTRA -> no sabemos el valor de i
-        trialsClone.addAll(edition.getTrials());
+        ArrayList<Trial> trialsClone = new ArrayList<>(edition.getEditionsTrialsList());
 
         Edition editionClone = new Edition(year, numPlayers, edition.getNumTrials(), trialsClone, new ArrayList<>(),0);
         editionsList.add(editionClone);
-
-        //editionClone = edition; esto no hay que hacerlo por noseque de los PUTOS punteros
 
     }
 
@@ -211,7 +217,6 @@ public class EditionsManager {
         try{
             FileWriter fw = new FileWriter(file, false);
             for (Edition edition : editionsList) {
-
                 fw.write(edition.toCSV());
                 fw.write(System.lineSeparator());
             }
@@ -219,21 +224,6 @@ public class EditionsManager {
         }catch (IOException e){
             System.out.println(e);
         }
-    }
-
-    public boolean checkForRepeatedEditions(Edition auxedition){
-        int aux=0;
-        for (int i = 0; i < editionsList.size(); i++) {
-            if (editionsList.get(i).getTrialExecuting()>0){
-                aux=i;
-            }
-        }
-        if (editionsList.get(aux).getEditionYear()==auxedition.getEditionYear()){
-            return false;
-        } else {
-            return true;
-        }
-
     }
 
     public void loadEditionsListFromCSV(){
@@ -247,8 +237,8 @@ public class EditionsManager {
                 editionsList.add(edition);
             }
             System.out.println("Editions loaded successfully");
-            System.out.println("Aqui las printo: ");
-            printInfoYearEdition(2022);
+            //System.out.println("Aqui las printo: ");
+            //printInfoYearEdition(2022);
         } catch (FileNotFoundException e){
             System.out.println("Error with file, couldn't load trials");
         }

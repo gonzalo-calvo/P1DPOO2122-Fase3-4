@@ -35,7 +35,7 @@ public class ExecutionManager {
 
             for (int i = 0; i < editionToExecute.getNumPlayers(); i++) {
                 if (editionToExecute.getPlayerList().get(i).isAlive()) {
-                    submitPlayer(editionToExecute, i, editionToExecute.getTrialExecuting());
+                    //submitPlayer(editionToExecute, i, editionToExecute.getTrialExecuting());
                 }
             }
 
@@ -55,7 +55,7 @@ public class ExecutionManager {
 
     }
 
-    public void submitPlayer(Edition edition, int i, int trial){
+    /*public void submitPlayer(Edition edition, int i, int trial){
         int acc = edition.getTrials().get(edition.getTrialExecuting()).getAcceptanceProbability();
         int rev = edition.getTrials().get(edition.getTrialExecuting()).getRevisionProbability();
         String result;
@@ -86,6 +86,8 @@ public class ExecutionManager {
         } while (result.equals("Revisions"));
 
     }
+
+     */
 
     public String askUserNonEmptyString(String text){
 
@@ -118,7 +120,7 @@ public class ExecutionManager {
         }
     }
 
-    public int getReward(Edition edition, int i){
+    /*public int getReward(Edition edition, int i){
 
         return switch (edition.getTrials().get(i).getQuartile()) {
             case 1 -> 4;
@@ -128,6 +130,8 @@ public class ExecutionManager {
             default -> -1;
         };
     }
+
+
 
     public int getPenalization(Edition edition, int i){
 
@@ -139,6 +143,8 @@ public class ExecutionManager {
             default -> -1;
         };
     }
+
+     */
 
     public String  askUserYesNo(){
         boolean check = false;

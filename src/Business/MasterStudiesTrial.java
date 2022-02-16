@@ -43,7 +43,7 @@ public class MasterStudiesTrial extends Trial{
 
     public void setValuesFromCSV(String line){
         String[] values = line.split("_");
-        System.out.println("line: " + line);
+        //System.out.println("line: " + line);
         name = values[1];
         masterName = values[2];
         creditNum = Integer.parseInt(values[3]);
@@ -55,7 +55,7 @@ public class MasterStudiesTrial extends Trial{
     }
 
     public void printDetails(){
-        System.out.println("Trial: " + this.name + "(Master studies)");
+        System.out.println("\nTrial: " + this.name + " (Master studies)");
         System.out.println("Master: " + this.masterName);
         System.out.println("ECTS: " + this.creditNum + ", with a " + this.passProbability + "chance to pass each one");
     }

@@ -8,37 +8,21 @@ public class Edition {
     private int numPlayers;
     private int numTrials;
     private int trialExecuting=0;
-    private ArrayList<PaperPublicationTrial> paperPublicationTrials;
+    private ArrayList<Trial> editionsTrialsList;
     private ArrayList<Player> playerList;
 
-    public Edition(int editionYear, int numPlayers, int numTrials, ArrayList<PaperPublicationTrial> paperPublicationTrials, ArrayList<Player> playerList, int trialExecuting) {
+    public Edition(int editionYear, int numPlayers, int numTrials, ArrayList<Trial> editionsTrialsList, ArrayList<Player> playerList, int trialExecuting) {
         this.editionYear = editionYear;
         this.numPlayers = numPlayers;
         this.numTrials = numTrials;
-        this.paperPublicationTrials = paperPublicationTrials;
+        this.editionsTrialsList = editionsTrialsList;
         this.playerList = playerList;
         this.trialExecuting = trialExecuting;
     }
 
     public Edition() {
-        this.paperPublicationTrials = new ArrayList<>();
+        this.editionsTrialsList = new ArrayList<>();
         this.playerList = new ArrayList<>();
-    }
-
-    public int getTrialExecuting() {
-        return trialExecuting;
-    }
-
-    public void setTrialExecuting(int trialExecuting) {
-        this.trialExecuting = trialExecuting;
-    }
-
-    public ArrayList<Player> getPlayerList() {
-        return playerList;
-    }
-
-    public void setPlayerList(ArrayList<Player> playerList) {
-        this.playerList = playerList;
     }
 
     public int getEditionYear() {
@@ -65,21 +49,49 @@ public class Edition {
         this.numTrials = numTrials;
     }
 
-    public ArrayList<PaperPublicationTrial> getTrials() {
-        return paperPublicationTrials;
+    public int getTrialExecuting() {
+        return trialExecuting;
     }
 
-    public void setTrials(ArrayList<PaperPublicationTrial> paperPublicationTrials) {
-        this.paperPublicationTrials = paperPublicationTrials;
+    public void setTrialExecuting(int trialExecuting) {
+        this.trialExecuting = trialExecuting;
+    }
+
+    public ArrayList<Trial> getEditionsTrialsList() {
+        return editionsTrialsList;
+    }
+
+    public void setEditionsTrialsList(ArrayList<Trial> editionsTrialsList) {
+        this.editionsTrialsList = editionsTrialsList;
+    }
+
+    public ArrayList<Player> getPlayerList() {
+        return playerList;
+    }
+
+    public void setPlayerList(ArrayList<Player> playerList) {
+        this.playerList = playerList;
     }
 
     public void printDetails(){
         System.out.println("\nYear: " + editionYear);
         System.out.println("Players: " + numPlayers);
+        System.out.println("Trials: ");
 
         for (int i = 0; i < numTrials; i++) {
-            System.out.println("    " + (i+1) + "- " + paperPublicationTrials.get(i).getTrialNameDetail());
+            System.out.println("    " + (i+1) + "- " + editionsTrialsList.get(i).getName() + " (" + getTrialNameDetail(editionsTrialsList.get(i).getType()) + ")");
         }
+    }
+
+    public String getTrialNameDetail(int type){
+
+        return switch (type) {
+            case 1 -> "Paper publication";
+            case 2 -> "Master studies";
+            case 3 -> "Doctoral thesis defense";
+            case 4 -> "Budget request";
+            default -> "Should never see this message";
+        };
 
     }
 
@@ -107,6 +119,7 @@ public class Edition {
         return editionYear + ";" + numPlayers + ";" + playersListToCSV() + ";" + numTrials + ";" + trialsListToCSV() + ";" + trialExecuting;
     }
 
+
     public String playersListToCSV(){
         StringBuilder stringPlayers = new StringBuilder();
 
@@ -124,22 +137,39 @@ public class Edition {
         return stringPlayers.toString();
     }
 
+
+
     public String trialsListToCSV(){
         StringBuilder stringTrials = new StringBuilder();
 
-        if (paperPublicationTrials.size()==0){
+        if (editionsTrialsList.size()==0){
             return stringTrials.toString();
         }
 
-        for (int i = 0; i < paperPublicationTrials.size(); i++) {
-            if (i== paperPublicationTrials.size()-1){
-                stringTrials.append(paperPublicationTrials.get(i).toCSV());
-            } else {
-                stringTrials.append(paperPublicationTrials.get(i).toCSV()).append(":");
+        for (int i = 0; i < editionsTrialsList.size(); i++) {
+            Trial trial = editionsTrialsList.get(i);
+            if (trial.getType() == 1) {
+                PaperPublicationTrial paperPublicationTrial = (PaperPublicationTrial) trial;
+                stringTrials.append(paperPublicationTrial.toCSV());
+            } else if (trial.getType() == 2) {
+                MasterStudiesTrial masterStudiesTrial = (MasterStudiesTrial) trial;
+                stringTrials.append(masterStudiesTrial.toCSV());
+            } else if (trial.getType() == 3) {
+                DoctoralThesisDefenseTrial doctoralThesisDefenseTrial = (DoctoralThesisDefenseTrial) trial;
+                stringTrials.append(doctoralThesisDefenseTrial.toCSV());
+            } else if (trial.getType() == 4) {
+                BudgetRequestTrial budgetRequestTrial = (BudgetRequestTrial) trial;
+                stringTrials.append(budgetRequestTrial.toCSV());
             }
+
+            if (i!=editionsTrialsList.size()-1){
+                stringTrials.append(":");
+            }
+
         }
         return stringTrials.toString();
     }
+
 
     public void setEditionValuesFromCSV(String line) {
         String[] values = line.split(";");
@@ -161,12 +191,38 @@ public class Edition {
 
         String[] trialValues = values[4].split(":");
         for (int i = 0; i < trialValues.length; i++) {
-            PaperPublicationTrial paperPublicationTrial = new PaperPublicationTrial();
-            paperPublicationTrial.setValuesFromCSV(trialValues[i]);
-            paperPublicationTrials.add(paperPublicationTrial);
+            switch (trialValues[i].charAt(0)) {
+                case '1' -> {
+                    PaperPublicationTrial paperPublicationTrial = new PaperPublicationTrial();
+                    paperPublicationTrial.setType(1);
+                    paperPublicationTrial.setValuesFromCSV(trialValues[i]);
+                    editionsTrialsList.add(paperPublicationTrial);
+                }
+                case '2' -> {
+                    MasterStudiesTrial masterStudiesTrial = new MasterStudiesTrial();
+                    masterStudiesTrial.setType(2);
+                    masterStudiesTrial.setValuesFromCSV(trialValues[i]);
+                    editionsTrialsList.add(masterStudiesTrial);
+                }
+                case '3' -> {
+                    DoctoralThesisDefenseTrial doctoralThesisDefenseTrial = new DoctoralThesisDefenseTrial();
+                    doctoralThesisDefenseTrial.setType(3);
+                    doctoralThesisDefenseTrial.setValuesFromCSV(trialValues[i]);
+                    editionsTrialsList.add(doctoralThesisDefenseTrial);
+                }
+                case '4' -> {
+                    BudgetRequestTrial budgetRequestTrial = new BudgetRequestTrial();
+                    budgetRequestTrial.setType(4);
+                    budgetRequestTrial.setValuesFromCSV(trialValues[i]);
+                    editionsTrialsList.add(budgetRequestTrial);
+                }
+                default -> System.out.println("No identification number for trial type");
+            }
         }
 
         trialExecuting = Integer.parseInt(values[5]);
 
     }
+
+
 }

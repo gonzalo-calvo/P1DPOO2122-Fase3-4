@@ -70,7 +70,7 @@ public class PaperPublicationTrial extends Trial{
 
     public void setValuesFromCSV(String line){
         String[] values = line.split("_");
-        System.out.println("line: " + line);
+        //System.out.println("line: " + line);
         name = values[1];
         journalName = values[2];
         quartile = Integer.parseInt(values[3]);
@@ -84,8 +84,8 @@ public class PaperPublicationTrial extends Trial{
     }
 
     public void printDetails(){
-        System.out.println("Trial: " + this.name + "(Paper publication)");
-        System.out.println("Journal: " + this.journalName + " (" + this.quartile + ")");
+        System.out.println("\nTrial: " + this.name + " (Paper publication)");
+        System.out.println("Journal: " + this.journalName + " (Q" + this.quartile + ")");
         System.out.println("Chances: " + this.acceptanceProbability + "% acceptance, " + this.revisionProbability + "% revision, " + this.rejectionProbability + "% rejection\n");
 
     }

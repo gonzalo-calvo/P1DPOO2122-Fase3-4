@@ -32,7 +32,7 @@ public class BudgetRequestTrial extends Trial{
 
     public void setValuesFromCSV(String line){
         String[] values = line.split("_");
-        System.out.println("line: " + line);
+        //System.out.println("line: " + line);
         name = values[1];
         entityName = values[2];
         moneyAmount = Integer.parseInt(values[3]);
@@ -43,7 +43,7 @@ public class BudgetRequestTrial extends Trial{
     }
 
     public void printDetails(){
-        System.out.println("Trial: " + this.name + "(Budget request)");
+        System.out.println("\nTrial: " + this.name + " (Budget request)");
         System.out.println("Entity: " + this.entityName);
         System.out.println("Budget: " + this.moneyAmount + " €");
     }

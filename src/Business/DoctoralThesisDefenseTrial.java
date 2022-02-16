@@ -33,7 +33,7 @@ public class DoctoralThesisDefenseTrial extends Trial{
 
     public void setValuesFromCSV(String line){
         String[] values = line.split("_");
-        System.out.println("line: " + line);
+        //System.out.println("line: " + line);
         name = values[1];
         fieldOfStudy = values[2];
         difficulty = Integer.parseInt(values[3]);
@@ -44,7 +44,7 @@ public class DoctoralThesisDefenseTrial extends Trial{
     }
 
     public void printDetails(){
-        System.out.println("Trial: " + this.name + "(Doctoral thesis defense)");
+        System.out.println("\nTrial: " + this.name + " (Doctoral thesis defense)");
         System.out.println("Field: " + this.fieldOfStudy);
         System.out.println("Difficulty: " + this.difficulty);
     }
