@@ -6,12 +6,14 @@ public class Player {
     private boolean alive;
     private int investigationPoints;
     private int level;
+    private boolean trialPass;
 
-    public Player(String name, boolean alive, int investigationPoints, int level) {
+    public Player(String name, boolean alive, int investigationPoints, int level, boolean trialPass) {
         this.name = name;
         this.alive = alive;
         this.investigationPoints = investigationPoints;
         this.level = level;
+        this.trialPass = trialPass;
     }
 
     public Player() {
@@ -49,8 +51,16 @@ public class Player {
         this.level = level;
     }
 
+    public boolean isTrialPass() {
+        return trialPass;
+    }
+
+    public void setTrialPass(boolean trialPass) {
+        this.trialPass = trialPass;
+    }
+
     public String toCSV(){
-        return name + "-" + investigationPoints + "-" + alive;
+        return name + "-" + investigationPoints + "-" + alive + "-" + level;
     }
 
     public void setPlayerValuesFromCSV(String line){
