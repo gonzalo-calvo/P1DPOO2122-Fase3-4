@@ -46,10 +46,11 @@ public class ExecutionManager {
                         submitPlayerInMasterStudiesTrial(editionToExecute, i, editionToExecute.getTrialExecuting());
 
                     } else if (editionToExecute.getEditionsTrialsList().get(i).getType() == 3) {
-                        DoctoralThesisDefenseTrial doctoralThesisDefenseTrial = (DoctoralThesisDefenseTrial) editionToExecute.getEditionsTrialsList().get(i);
+                        submitPlayerInDoctroalThesis(editionToExecute, i, editionToExecute.getTrialExecuting());
 
                     } else if (editionToExecute.getEditionsTrialsList().get(i).getType() == 4) {
                         BudgetRequestTrial budgetRequestTrial = (BudgetRequestTrial) editionToExecute.getEditionsTrialsList().get(i);
+
                     }
                 }
             }
@@ -74,6 +75,41 @@ public class ExecutionManager {
         if (!editionToExecute.isAnyoneAlive()){
             System.out.println("\nTHE TRIALS 2021 HAVE ENDED IN FAILURE - 0 PLAYERS ENDED");
         }
+    }
+
+    private void submitPlayerInDoctroalThesis(Edition edition, int playerID, int trialID) {
+        DoctoralThesisDefenseTrial doctoralThesisDefenseTrial = (DoctoralThesisDefenseTrial) edition.getEditionsTrialsList().get(trialID);
+
+        boolean pass = false;
+        double result=0;
+
+        switch (edition.getPlayerList().get(playerID).getLevel()){
+            case 1 -> System.out.print(edition.getPlayerList().get(playerID).getName() + " ");
+            case 2 -> System.out.print("Master " + edition.getPlayerList().get(playerID).getName() + " ");
+            case 3 -> System.out.print(edition.getPlayerList().get(playerID).getName() + ", PhD ");
+        }
+
+        for (int i = 0; i < doctoralThesisDefenseTrial.getDifficulty(); i++) {
+            result = result + (2*(i+1) - 1);
+        }
+        result = Math.sqrt(result);
+        System.out.println("Result of puntuation: " + result);
+
+        if (edition.getPlayerList().get(playerID).getInvestigationPoints() >= result){
+            edition.getPlayerList().get(playerID).setTrialPass(true);
+            edition.getPlayerList().get(playerID).setInvestigationPoints(edition.getPlayerList().get(playerID).getInvestigationPoints() + getRewardDoctoralThesis(edition, playerID));
+            System.out.print("was successful. Congrats! Pi count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
+        } else {
+            edition.getPlayerList().get(playerID).setInvestigationPoints(edition.getPlayerList().get(playerID).getInvestigationPoints() - getPenalizationDoctoralThesis(edition, playerID));
+            System.out.print("Rejected. PI count:  " + edition.getPlayerList().get(playerID).getInvestigationPoints());
+        }
+
+
+
+
+
+
+
     }
 
     private void updatePlayerEvolution(Edition edition, int trialID) {
@@ -298,11 +334,11 @@ public class ExecutionManager {
 
     private int getRewardMasterStudies(Edition edition, int playerID){
 
-            return switch (edition.getPlayerList().get(playerID).getLevel()) {
-                case 1,2 -> 3;
-                case 3 -> 6;
-                default -> -1;
-            };
+        return switch (edition.getPlayerList().get(playerID).getLevel()) {
+            case 1,2 -> 3;
+            case 3 -> 6;
+            default -> -1;
+        };
 
     }
 
@@ -311,6 +347,26 @@ public class ExecutionManager {
         return switch (edition.getPlayerList().get(playerID).getLevel()) {
             case 1 -> 3;
             case 2,3 -> 1;
+            default -> -1;
+        };
+
+    }
+
+    private int getRewardDoctoralThesis(Edition edition, int playerID) {
+
+        return switch (edition.getPlayerList().get(playerID).getLevel()) {
+            case 1 -> 5;
+            case 2,3 -> 10;
+            default -> -1;
+        };
+
+    }
+
+    private int getPenalizationDoctoralThesis(Edition edition, int playerID) {
+
+        return switch (edition.getPlayerList().get(playerID).getLevel()) {
+            case 1 -> 5;
+            case 2,3 -> 10;
             default -> -1;
         };
 
