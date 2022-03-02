@@ -35,28 +35,43 @@ public class ExecutionManager {
 
             System.out.println("\nTrial #" + (editionToExecute.getTrialExecuting()+1) + " - " + editionToExecute.getEditionsTrialsList().get(editionToExecute.getTrialExecuting()).getName() + "\n");
 
-            for (int i = 0; i < editionToExecute.getNumPlayers(); i++) {
-
-                if (editionToExecute.getPlayerList().get(i).isAlive()) {
-
-                    if (editionToExecute.getEditionsTrialsList().get(editionToExecute.getTrialExecuting()).getType() == 1) {
-                        submitPlayerInPaperPublicationTrial(editionToExecute, i, editionToExecute.getTrialExecuting());
-
-                    } else if (editionToExecute.getEditionsTrialsList().get(i).getType() == 2) {
-                        submitPlayerInMasterStudiesTrial(editionToExecute, i, editionToExecute.getTrialExecuting());
-
-                    } else if (editionToExecute.getEditionsTrialsList().get(i).getType() == 3) {
-                        submitPlayerInDoctroalThesis(editionToExecute, i, editionToExecute.getTrialExecuting());
-
-                    } else if (editionToExecute.getEditionsTrialsList().get(i).getType() == 4) {
-                        BudgetRequestTrial budgetRequestTrial = (BudgetRequestTrial) editionToExecute.getEditionsTrialsList().get(i);
-
+            switch (editionToExecute.getEditionsTrialsList().get(editionToExecute.getTrialExecuting()).getType()){
+                case 1:
+                    for (int i = 0; i < editionToExecute.getNumPlayers(); i++) {
+                        if (editionToExecute.getPlayerList().get(i).isAlive()){
+                            submitPlayerInPaperPublicationTrial(editionToExecute, i, editionToExecute.getTrialExecuting());
+                        }
                     }
-                }
+                    break;
+
+                case 2:
+                    for (int i = 0; i < editionToExecute.getNumPlayers(); i++) {
+                        if (editionToExecute.getPlayerList().get(i).isAlive()){
+                            submitPlayerInMasterStudiesTrial(editionToExecute, i, editionToExecute.getTrialExecuting());
+                        }
+                    }
+                    break;
+
+                case 3:
+                    for (int i = 0; i < editionToExecute.getNumPlayers(); i++) {
+                        if (editionToExecute.getPlayerList().get(i).isAlive()){
+                            submitPlayerInDoctoralThesis(editionToExecute, i, editionToExecute.getTrialExecuting());
+                        }
+                    }
+                    break;
+
+                case 4:
+                    submitPlayersInBudgetRequest(editionToExecute, editionToExecute.getTrialExecuting());
+                    break;
+
+                default:
+                    System.out.println("Error de switch escogiendo tipo de trial");
+
             }
 
             System.out.println("");
             for (int i = 0; i < editionToExecute.getPlayerList().size(); i++) {
+                System.out.println("entra for");
                 if (editionToExecute.getPlayerList().get(i).getLevel()<3){
                     updatePlayerEvolution(editionToExecute, editionToExecute.getTrialExecuting());
                 }
@@ -77,40 +92,9 @@ public class ExecutionManager {
         }
     }
 
-    private void submitPlayerInDoctroalThesis(Edition edition, int playerID, int trialID) {
-        DoctoralThesisDefenseTrial doctoralThesisDefenseTrial = (DoctoralThesisDefenseTrial) edition.getEditionsTrialsList().get(trialID);
-
-        boolean pass = false;
-        double result=0;
-
-        switch (edition.getPlayerList().get(playerID).getLevel()){
-            case 1 -> System.out.print(edition.getPlayerList().get(playerID).getName() + " ");
-            case 2 -> System.out.print("Master " + edition.getPlayerList().get(playerID).getName() + " ");
-            case 3 -> System.out.print(edition.getPlayerList().get(playerID).getName() + ", PhD ");
-        }
-
-        for (int i = 0; i < doctoralThesisDefenseTrial.getDifficulty(); i++) {
-            result = result + (2*(i+1) - 1);
-        }
-        result = Math.sqrt(result);
-        System.out.println("Result of puntuation: " + result);
-
-        if (edition.getPlayerList().get(playerID).getInvestigationPoints() >= result){
-            edition.getPlayerList().get(playerID).setTrialPass(true);
-            edition.getPlayerList().get(playerID).setInvestigationPoints(edition.getPlayerList().get(playerID).getInvestigationPoints() + getRewardDoctoralThesis(edition, playerID));
-            System.out.print("was successful. Congrats! Pi count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
-        } else {
-            edition.getPlayerList().get(playerID).setInvestigationPoints(edition.getPlayerList().get(playerID).getInvestigationPoints() - getPenalizationDoctoralThesis(edition, playerID));
-            System.out.print("Rejected. PI count:  " + edition.getPlayerList().get(playerID).getInvestigationPoints());
-        }
 
 
 
-
-
-
-
-    }
 
     private void updatePlayerEvolution(Edition edition, int trialID) {
 
@@ -118,7 +102,7 @@ public class ExecutionManager {
 
             if (edition.getPlayerList().get(i).isTrialPass()) {
 
-                if (edition.getEditionsTrialsList().get(trialID).getType() ==1  && edition.getPlayerList().get(i).getInvestigationPoints()>=10) {
+                if (edition.getEditionsTrialsList().get(trialID).getType() == 1  && edition.getPlayerList().get(i).getInvestigationPoints()>=10) {
 
                     switch (edition.getPlayerList().get(i).getLevel()) {
                         case 1 -> {
@@ -168,7 +152,7 @@ public class ExecutionManager {
         }
     }
 
-    public void submitPlayerInPaperPublicationTrial(Edition edition, int playerID, int trialID){
+    private void submitPlayerInPaperPublicationTrial(Edition edition, int playerID, int trialID){
 
         PaperPublicationTrial paperPublicationTrial = (PaperPublicationTrial) edition.getEditionsTrialsList().get(trialID);
 
@@ -211,7 +195,7 @@ public class ExecutionManager {
 
     }
 
-    public void submitPlayerInMasterStudiesTrial(Edition edition, int playerID, int trialID){
+    private void submitPlayerInMasterStudiesTrial(Edition edition, int playerID, int trialID){
 
         MasterStudiesTrial masterStudiesTrial = (MasterStudiesTrial) edition.getEditionsTrialsList().get(trialID);
 
@@ -243,6 +227,85 @@ public class ExecutionManager {
                 edition.getPlayerList().get(playerID).setInvestigationPoints(0);
             }
         }
+    }
+
+    private void submitPlayerInDoctoralThesis(Edition edition, int playerID, int trialID) {
+        DoctoralThesisDefenseTrial doctoralThesisDefenseTrial = (DoctoralThesisDefenseTrial) edition.getEditionsTrialsList().get(trialID);
+
+        boolean pass = false;
+        double result=0;
+
+        switch (edition.getPlayerList().get(playerID).getLevel()){
+            case 1 -> System.out.print(edition.getPlayerList().get(playerID).getName() + " ");
+            case 2 -> System.out.print("Master " + edition.getPlayerList().get(playerID).getName() + " ");
+            case 3 -> System.out.print(edition.getPlayerList().get(playerID).getName() + ", PhD ");
+        }
+
+        for (int i = 0; i < doctoralThesisDefenseTrial.getDifficulty(); i++) {
+            result = result + (2*(i+1) - 1);
+        }
+        result = Math.sqrt(result);
+        System.out.println("Result of puntuation: " + result);
+
+        if (edition.getPlayerList().get(playerID).getInvestigationPoints() >= result){
+            edition.getPlayerList().get(playerID).setTrialPass(true);
+            edition.getPlayerList().get(playerID).setInvestigationPoints(edition.getPlayerList().get(playerID).getInvestigationPoints() + getRewardDoctoralThesis(edition, playerID));
+            System.out.print("was successful. Congrats! Pi count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
+        } else {
+            edition.getPlayerList().get(playerID).setInvestigationPoints(edition.getPlayerList().get(playerID).getInvestigationPoints() - getPenalizationDoctoralThesis(edition, playerID));
+            System.out.print("Rejected. PI count:  " + edition.getPlayerList().get(playerID).getInvestigationPoints());
+        }
+
+
+
+
+
+
+
+    }
+
+    private void submitPlayersInBudgetRequest(Edition edition, int trialID){
+        BudgetRequestTrial budgetRequestTrial = (BudgetRequestTrial) edition.getEditionsTrialsList().get(trialID);
+
+        int suma = 0;
+
+        for (int i = 0; i < edition.getNumPlayers(); i++) {
+            suma = suma + edition.getPlayerList().get(i).getInvestigationPoints();
+        }
+
+        if (suma >= Math.log(budgetRequestTrial.getMoneyAmount())/Math.log(2)){
+            System.out.println("The research group got the budget!");
+            for (int i = 0; i < edition.getPlayerList().size(); i++) {
+                if (edition.getPlayerList().get(i).isAlive()){
+                    switch (edition.getPlayerList().get(i).getLevel()){
+                        case 1 -> System.out.print(edition.getPlayerList().get(i).getName());
+                        case 2 -> System.out.print("Master " + edition.getPlayerList().get(i).getName());
+                        case 3 -> System.out.print(edition.getPlayerList().get(i).getName() + ", PhD");
+                    }
+                    edition.getPlayerList().get(i).setTrialPass(true);
+                    edition.getPlayerList().get(i).setInvestigationPoints(edition.getPlayerList().get(i).getInvestigationPoints() + getRewardBudgetRequest(edition, i));
+                    System.out.println(". PI count: " + edition.getPlayerList().get(i).getInvestigationPoints());
+                }
+            }
+        }else{
+            for (int i = 0; i < edition.getNumPlayers(); i++) {
+                System.out.println("\nThe research group didn't get the budget!");
+                edition.getPlayerList().get(i).setInvestigationPoints(edition.getPlayerList().get(i).getInvestigationPoints() - 2);
+                System.out.println(". PI count: " + edition.getPlayerList().get(i).getInvestigationPoints());
+            }
+        }
+    }
+
+    private int getRewardBudgetRequest(Edition edition, int playerID) {
+
+        int playerScore = edition.getPlayerList().get(playerID).getInvestigationPoints();
+
+        if (Math.floorMod(playerScore,2)>0){
+            return ((playerScore + 1)/2);
+        } else {
+            return (playerScore/2);
+        }
+
     }
 
     private int willMasterStudiesPass(int numCredits, int passProbability) {
