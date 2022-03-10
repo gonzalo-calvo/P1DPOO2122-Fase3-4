@@ -1,8 +1,8 @@
-package Controller;
+package Business;
 
-import Composer_Model.*;
-import Conductor_Model.EngineerPlayer;
-import Conductor_Model.Player;
+import Composer_Business.*;
+import Conductor_Business.EngineerPlayer;
+import Conductor_Business.Player;
 import java.util.ArrayList;
 
 public class Edition {

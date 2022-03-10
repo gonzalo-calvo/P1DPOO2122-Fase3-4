@@ -1,6 +1,7 @@
-package Controller;
+package Business;
 
-import Composer_Model.*;
+import Composer_Business.*;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,6 +15,7 @@ public class EditionsManager {
     private ArrayList<Trial> trialsList;
     private ArrayList<Edition> editionsList = new ArrayList<>();
     File file = new File("EditionList.csv");
+    File jsonFile = new File("JsonEditionList.json");
 
     public EditionsManager(ArrayList<Trial> trialsList) {
         this.trialsList = trialsList;
@@ -213,21 +215,6 @@ public class EditionsManager {
             System.out.println("Is alive? " + editionsList.get(aux).getPlayerList().get(i).isAlive());
         }
     }
-
-
-    public void copyEditionsListToCSV(){
-        try{
-            FileWriter fw = new FileWriter(file, false);
-            for (Edition edition : editionsList) {
-                fw.write(edition.toCSV());
-                fw.write(System.lineSeparator());
-            }
-            fw.close();
-        }catch (IOException e){
-            System.out.println(e);
-        }
-    }
-
 
 
     public void loadEditionsListFromCSV(){

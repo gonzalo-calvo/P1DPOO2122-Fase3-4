@@ -1,13 +1,13 @@
-package Controller;
+package Business;
 
-import Composer_Model.BudgetRequestTrial;
-import Composer_Model.DoctoralThesisDefenseTrial;
-import Composer_Model.MasterStudiesTrial;
-import Composer_Model.PaperPublicationTrial;
-import Conductor_Model.DoctorPlayer;
-import Conductor_Model.EngineerPlayer;
-import Conductor_Model.MasterPlayer;
-import Conductor_Model.Player;
+import Composer_Business.BudgetRequestTrial;
+import Composer_Business.DoctoralThesisDefenseTrial;
+import Composer_Business.MasterStudiesTrial;
+import Composer_Business.PaperPublicationTrial;
+import Conductor_Business.DoctorPlayer;
+import Conductor_Business.EngineerPlayer;
+import Conductor_Business.MasterPlayer;
+import Conductor_Business.Player;
 
 import java.util.Locale;
 import java.util.Random;

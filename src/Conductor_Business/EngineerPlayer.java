@@ -1,4 +1,4 @@
-package Conductor_Model;
+package Conductor_Business;
 
 public class EngineerPlayer extends Player {
 

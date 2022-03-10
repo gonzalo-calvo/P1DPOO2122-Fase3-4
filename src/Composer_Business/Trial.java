@@ -1,4 +1,4 @@
-package Composer_Model;
+package Composer_Business;
 
 public abstract class Trial {
     protected String name;

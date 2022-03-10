@@ -1,8 +1,7 @@
-package Controller;
+package Business;
 
-import Composer_Model.*;
+import Composer_Business.*;
 import com.google.gson.Gson;
-import org.json.simple.JSONArray;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,7 +15,7 @@ public class TrialsManager {
     private ArrayList<Trial> trialList;
 
     File csvFile = new File("TrialList.csv");
-    File jsonFile = new File("JsonList.json");
+    File jsonFile = new File("JsonTrialList.json");
 
     public TrialsManager() {
         this.trialList = new ArrayList<>();
@@ -441,9 +440,6 @@ public class TrialsManager {
     }
 
     public void copyTrialsListToJson(){
-
-
-
 
         try {
             FileWriter fw = new FileWriter(jsonFile,false);

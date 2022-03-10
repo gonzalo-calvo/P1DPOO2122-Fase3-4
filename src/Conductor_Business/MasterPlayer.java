@@ -1,11 +1,11 @@
-package Conductor_Model;
+package Conductor_Business;
 
-public class DoctorPlayer extends Player {
+public class MasterPlayer extends Player {
 
-    public DoctorPlayer() {
+    public MasterPlayer() {
     }
 
-    public DoctorPlayer(String name, int level, int investigationPoints) {
+    public MasterPlayer(String name, int level, int investigationPoints) {
         super(name, level, investigationPoints);
     }
 
@@ -15,7 +15,7 @@ public class DoctorPlayer extends Player {
             if(trial_type == this.level+1){
                 this.investigationPoints = 10;
             }else {
-                this.investigationPoints += points * 2;
+                this.investigationPoints += points;
             }
         }else{ // LOSE
             this.investigationPoints += points/2;

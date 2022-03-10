@@ -1,6 +1,7 @@
-package Controller;
+package Business;
 
-import View.MenuView;
+import Persistence.FilesController;
+import Presentation.MenuView;
 
 import java.util.Calendar;
 
@@ -10,11 +11,13 @@ public class MenuController {
     private final TrialsManager trialsManager;
     private final EditionsManager editionsManager;
     private final ExecutionManager executionManager;
+    private final FilesController filesController;
 
     public MenuController() {
         menuView = new MenuView();
-
         trialsManager = new TrialsManager();
+        filesController = new FilesController();
+
         try{
             trialsManager.loadTrialsListFromCSV();
         } catch (Exception e){
@@ -54,6 +57,7 @@ public class MenuController {
             trialsManager.copyTrialsListToCSV();
             trialsManager.copyTrialsListToJson();
             editionsManager.copyEditionsListToCSV();
+            editionsManager.copyEditionsListToJson();
 
         }else if (role == 'B'){
             // Conductor
