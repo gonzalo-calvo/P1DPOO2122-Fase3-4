@@ -1,5 +1,4 @@
-package Business;
-
+package Composer_Model;
 
 public abstract class Trial {
     protected String name;
@@ -28,11 +27,6 @@ public abstract class Trial {
     public void setType(int type) {
         this.type = type;
     }
-
-
-
-
-
 
 }
 

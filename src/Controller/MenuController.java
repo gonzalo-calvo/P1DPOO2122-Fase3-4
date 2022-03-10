@@ -1,6 +1,6 @@
-package Business;
+package Controller;
 
-import Presentation.MenuView;
+import View.MenuView;
 
 import java.util.Calendar;
 
@@ -52,6 +52,7 @@ public class MenuController {
                 }
             }while (option != 3);
             trialsManager.copyTrialsListToCSV();
+            trialsManager.copyTrialsListToJson();
             editionsManager.copyEditionsListToCSV();
 
         }else if (role == 'B'){

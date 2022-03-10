@@ -1,5 +1,8 @@
-package Business;
+package Controller;
 
+import Composer_Model.*;
+import Conductor_Model.EngineerPlayer;
+import Conductor_Model.Player;
 import java.util.ArrayList;
 
 public class Edition {
@@ -120,6 +123,8 @@ public class Edition {
     }
 
 
+
+
     public String playersListToCSV(){
         StringBuilder stringPlayers = new StringBuilder();
 
@@ -136,6 +141,8 @@ public class Edition {
         }
         return stringPlayers.toString();
     }
+
+
 
 
 
@@ -181,7 +188,7 @@ public class Edition {
         //System.out.println("value of only element of player value: " + playerValues[0] + " :");
         if (!playerValues[0].equals("")) {
             for (int i = 0; i < playerValues.length; i++) {
-                Player player = new Player();
+                Player player = new EngineerPlayer();
                 player.setPlayerValuesFromCSV(playerValues[i]);
                 playerList.add(player);
             }
@@ -223,6 +230,8 @@ public class Edition {
         trialExecuting = Integer.parseInt(values[5]);
 
     }
+
+
 
 
 }

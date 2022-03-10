@@ -1,6 +1,6 @@
-package Business;
+package Composer_Model;
 
-public class DoctoralThesisDefenseTrial extends Trial{
+public class DoctoralThesisDefenseTrial extends Trial {
 
 
     private String fieldOfStudy;

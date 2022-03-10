@@ -1,6 +1,6 @@
-package Business;
+package Composer_Model;
 
-public class MasterStudiesTrial extends Trial{
+public class MasterStudiesTrial extends Trial {
 
     private String masterName;
     private int creditNum;

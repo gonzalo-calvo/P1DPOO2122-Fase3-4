@@ -1,6 +1,6 @@
-package Business;
+package Composer_Model;
 
-public class PaperPublicationTrial extends Trial{
+public class PaperPublicationTrial extends Trial {
     private String journalName;
     private int quartile;
     private int acceptanceProbability;

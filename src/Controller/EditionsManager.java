@@ -1,4 +1,6 @@
-package Business;
+package Controller;
+
+import Composer_Model.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -63,7 +65,7 @@ public class EditionsManager {
         System.out.println("\n     --- Trials ---\n");
 
         for (int i = 0; i < trialsList.size(); i++) {
-            System.out.println( (i+1) + ") " + trialsList.get(i).name);
+            System.out.println( (i+1) + ") " + trialsList.get(i).getName());
         }
 
         for (int i = 0; i < num_trials; i++) {
@@ -225,6 +227,8 @@ public class EditionsManager {
             System.out.println(e);
         }
     }
+
+
 
     public void loadEditionsListFromCSV(){
 

@@ -1,4 +1,8 @@
-package Business;
+package Controller;
+
+import Composer_Model.*;
+import com.google.gson.Gson;
+import org.json.simple.JSONArray;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,7 +15,8 @@ public class TrialsManager {
 
     private ArrayList<Trial> trialList;
 
-    File file = new File("TrialList.csv");
+    File csvFile = new File("TrialList.csv");
+    File jsonFile = new File("JsonList.json");
 
     public TrialsManager() {
         this.trialList = new ArrayList<>();
@@ -54,22 +59,22 @@ public class TrialsManager {
             for (Trial trial : trialList) {
                 if (trial.getType() == 1) {
                     PaperPublicationTrial paperPublicationTrial = (PaperPublicationTrial) trial;
-                    if (paperPublicationTrial.name.equals(trialName)){
+                    if (paperPublicationTrial.getName().equals(trialName)){
                         return true;
                     }
                 } else if (trial.getType() == 2) {
                     MasterStudiesTrial masterStudiesTrial = (MasterStudiesTrial) trial;
-                    if (masterStudiesTrial.name.equals(trialName)){
+                    if (masterStudiesTrial.getName().equals(trialName)){
                         return true;
                     }
                 } else if (trial.getType() == 3) {
                     DoctoralThesisDefenseTrial doctoralThesisDefenseTrial = (DoctoralThesisDefenseTrial) trial;
-                    if (doctoralThesisDefenseTrial.name.equals(trialName)){
+                    if (doctoralThesisDefenseTrial.getName().equals(trialName)){
                         return true;
                     }
                 } else if (trial.getType() == 4) {
                     BudgetRequestTrial budgetRequestTrial = (BudgetRequestTrial) trial;
-                    if (budgetRequestTrial.name.equals(trialName)){
+                    if (budgetRequestTrial.getName().equals(trialName)){
                         return true;
                     }
                 }
@@ -320,7 +325,7 @@ public class TrialsManager {
             System.out.println("\nWhich trial do you want to delete?\n");
 
             for (int i = 0; i < trialList.size(); i++) {
-                System.out.println(i + 1 + ") " + trialList.get(i).name);
+                System.out.println(i + 1 + ") " + trialList.get(i).getName());
             }
             System.out.println();
             System.out.println(trialList.size() + 1 + ") Back");
@@ -331,7 +336,7 @@ public class TrialsManager {
             if (option >= 1 && option <= trialList.size()) {
                 System.out.println("Enter the trial’s name for confirmation: ");
                 trial_deleted = scanner.nextLine();
-                if (trial_deleted.equals(trialList.get(option-1).name)){
+                if (trial_deleted.equals(trialList.get(option-1).getName())){
                     trialList.remove(option-1);
                     System.out.println("The trial was successfully deleted.\n");
                 }else{
@@ -368,7 +373,7 @@ public class TrialsManager {
     public void loadTrialsListFromCSV(){
 
         try{
-            Scanner scanner = new Scanner(file);
+            Scanner scanner = new Scanner(csvFile);
 
             while (scanner.hasNextLine()){
                 String line = scanner.nextLine();
@@ -412,7 +417,7 @@ public class TrialsManager {
     public void copyTrialsListToCSV(){
 
         try{
-            FileWriter fw = new FileWriter(file, false);
+            FileWriter fw = new FileWriter(csvFile, false);
             for (Trial trial : trialList) {
                 if (trial.getType() == 1) {
                     PaperPublicationTrial paperPublicationTrial = (PaperPublicationTrial) trial;
@@ -433,6 +438,26 @@ public class TrialsManager {
         }catch (IOException e){
             System.out.println("Error is: " + e);
         }
+    }
+
+    public void copyTrialsListToJson(){
+
+
+
+
+        try {
+            FileWriter fw = new FileWriter(jsonFile,false);
+            String json = new Gson().toJson(trialList);
+
+            System.out.println(json);
+            System.out.println("path: " + jsonFile);
+            fw.write(json);
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
      

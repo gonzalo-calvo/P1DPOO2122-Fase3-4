@@ -1,4 +1,13 @@
-package Business;
+package Controller;
+
+import Composer_Model.BudgetRequestTrial;
+import Composer_Model.DoctoralThesisDefenseTrial;
+import Composer_Model.MasterStudiesTrial;
+import Composer_Model.PaperPublicationTrial;
+import Conductor_Model.DoctorPlayer;
+import Conductor_Model.EngineerPlayer;
+import Conductor_Model.MasterPlayer;
+import Conductor_Model.Player;
 
 import java.util.Locale;
 import java.util.Random;
@@ -17,11 +26,10 @@ public class ExecutionManager {
 
         if (editionToExecute.getPlayerList().isEmpty()) {   //if empty --> first time executing
             for (int i = 0; i < editionToExecute.getNumPlayers(); i++) {
-                Player auxPlayer = new Player();
+                Player auxPlayer = new EngineerPlayer();
                 auxPlayer.setName(askUserNonEmptyString("Enter the player’s name (" + (i + 1) + "/" + editionToExecute.getNumPlayers() + "): "));
                 auxPlayer.setInvestigationPoints(5);
                 auxPlayer.setLevel(1);
-                auxPlayer.setAlive(true);
                 editionToExecute.getPlayerList().add(auxPlayer);
             }
         } else {
@@ -29,7 +37,6 @@ public class ExecutionManager {
                 printPlayer(editionToExecute.getPlayerList().get(i));
             }
         }
-
 
         while (editionToExecute.getNumTrials()>editionToExecute.getTrialExecuting() && continueExecution.equals("yes") && editionToExecute.isAnyoneAlive()){
 
@@ -61,27 +68,20 @@ public class ExecutionManager {
                     break;
 
                 case 4:
-                    submitPlayersInBudgetRequest(editionToExecute, editionToExecute.getTrialExecuting());
+                    submitTeamInBudgetRequest(editionToExecute, editionToExecute.getTrialExecuting());
                     break;
 
                 default:
-                    System.out.println("Error de switch escogiendo tipo de trial");
-
+                    System.out.println("Error de switch escogiendo tipo de trial. Valor switch: " + editionToExecute.getEditionsTrialsList().get(editionToExecute.getTrialExecuting()).getType());
             }
 
-            System.out.println("");
-            for (int i = 0; i < editionToExecute.getPlayerList().size(); i++) {
-                System.out.println("entra for");
-                if (editionToExecute.getPlayerList().get(i).getLevel()<3){
-                    updatePlayerEvolution(editionToExecute, editionToExecute.getTrialExecuting());
-                }
-            }
+            System.out.println("\nUpdating player evolution");
+            updatePlayerEvolution(editionToExecute);
 
             editionToExecute.setTrialExecuting(editionToExecute.getTrialExecuting()+1);
 
             if ((editionToExecute.getNumTrials()==editionToExecute.getTrialExecuting())) {
                 System.out.println("\nTHE TRIALS 2021 HAVE ENDED " + editionToExecute.howManyFinishers() + " PLAYERS WON");
-
             } else {
                 continueExecution = askUserYesNo();
             }
@@ -92,62 +92,29 @@ public class ExecutionManager {
         }
     }
 
-
-
-
-
-    private void updatePlayerEvolution(Edition edition, int trialID) {
+    private void updatePlayerEvolution(Edition edition) {
 
         for (int i = 0; i < edition.getNumPlayers(); i++) {
 
-            if (edition.getPlayerList().get(i).isTrialPass()) {
+            Player auxPlayer = edition.getPlayerList().get(i);
 
-                if (edition.getEditionsTrialsList().get(trialID).getType() == 1  && edition.getPlayerList().get(i).getInvestigationPoints()>=10) {
+            if (auxPlayer.getInvestigationPoints()>=10) {
 
-                    switch (edition.getPlayerList().get(i).getLevel()) {
-                        case 1 -> {
-                            edition.getPlayerList().get(i).setLevel(2);
-                            System.out.println(edition.getPlayerList().get(i).getName() + " is now a master (with 5 PI).");
-                            edition.getPlayerList().get(i).setInvestigationPoints(5);
-                        }
-                        case 2 -> {
-                            edition.getPlayerList().get(i).setLevel(3);
-                            System.out.println(edition.getPlayerList().get(i).getName() + " is now a doctor (with 5 PI).");
-                            edition.getPlayerList().get(i).setInvestigationPoints(5);
-                        }
-                        case 3 -> {
-                        }
-                        default -> System.out.println("No de seberia mostrar este mensaje");
+                switch (edition.getPlayerList().get(i).getLevel()) {
+                    case 1 -> {
+                        MasterPlayer mp = new MasterPlayer(auxPlayer.getName(), 2, 5);
+                        edition.getPlayerList().set(i,mp);  //intercambia el objeto de ingeniero por uno tipo master en la posicion de i
+                        System.out.println(mp.getName() + " is now a master (with 5 PI).");
                     }
-
-                }   else if (edition.getEditionsTrialsList().get(trialID).getType() == 2){
-
-                    switch (edition.getPlayerList().get(i).getLevel()) {
-                        case 1 -> {
-                            edition.getPlayerList().get(i).setLevel(2);
-                            System.out.println(edition.getPlayerList().get(i).getName() + " is now a master (with 5 PI).");
-                            edition.getPlayerList().get(i).setInvestigationPoints(5);
-                        }
-                        case 2 -> {
-                            if (edition.getPlayerList().get(i).getInvestigationPoints()>=10) {
-                                edition.getPlayerList().get(i).setLevel(3);
-                                System.out.println(edition.getPlayerList().get(i).getName() + " is now a doctor (with 5 PI).");
-                                edition.getPlayerList().get(i).setInvestigationPoints(5);
-                            }
-                        }
-                        case 3 -> {
-                        }
-                        default -> System.out.println("No de seberia mostrar este mensaje");
-
+                    case 2 -> {
+                        DoctorPlayer dp = new DoctorPlayer(auxPlayer.getName(), 3, 5);
+                        edition.getPlayerList().set(i,dp);
+                        System.out.println(dp.getName() + " is now a doctor (with 5 PI).");
                     }
-
-                }   else if (edition.getEditionsTrialsList().get(trialID).getType() == 3){
-
-                }   else if (edition.getEditionsTrialsList().get(trialID).getType() == 4){
-
+                    case 3 -> {
+                    }
+                    default -> System.out.println("Error en update player evolution. Switch value es: " + edition.getPlayerList().get(i).getLevel());
                 }
-
-                edition.getPlayerList().get(i).setTrialPass(false);
             }
         }
     }
@@ -165,32 +132,29 @@ public class ExecutionManager {
             case 1 -> System.out.print("    " + edition.getPlayerList().get(playerID).getName() + " is submitting... ");
             case 2 -> System.out.print("    Master " + edition.getPlayerList().get(playerID).getName() + " is submitting... ");
             case 3 -> System.out.print("    " + edition.getPlayerList().get(playerID).getName() + ", PhD" + " is submitting... ");
+            default -> System.out.println("Error: The player level is: " + edition.getPlayerList().get(playerID).getLevel());
         }
-
 
         do{
             result = getRandomDecisionPaperPublication(acc,rev);
 
             switch (result) {
                 case "Accepted" -> {
-                    edition.getPlayerList().get(playerID).setInvestigationPoints(edition.getPlayerList().get(playerID).getInvestigationPoints() + getRewardPaperPublication(edition, quartile, playerID));
-                    edition.getPlayerList().get(playerID).setTrialPass(true);
+                    edition.getPlayerList().get(playerID).addPoints(getRewardOrPenaltyPaperPublication(quartile,"+"),1);
                     System.out.println("Accepted! PI count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
                 }
                 case "Revisions" -> System.out.print("Revisions... ");
                 case "Rejected" -> {
-                    edition.getPlayerList().get(playerID).setInvestigationPoints(edition.getPlayerList().get(playerID).getInvestigationPoints() - getPenalizationPaperPublication(edition, quartile, playerID));
+                    edition.getPlayerList().get(playerID).addPoints(getRewardOrPenaltyPaperPublication(quartile,"-"),1);
                     if (edition.getPlayerList().get(playerID).getInvestigationPoints() <= 0) {
-                        edition.getPlayerList().get(playerID).setAlive(false);
                         edition.getPlayerList().get(playerID).setInvestigationPoints(0);
                         System.out.println("Rejected. PI count: 0 - Disqualified!");
                     } else {
                         System.out.println("Rejected. PI count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
                     }
                 }
-                default -> System.out.println("ERROR Submit player paper publication trial");
+                default -> System.out.println("ERROR Submit player paper publication trial. Value of getRandomDecisionPaperPublication is: " + result);
             }
-
         } while (result.equals("Revisions"));
 
     }
@@ -199,9 +163,7 @@ public class ExecutionManager {
 
         MasterStudiesTrial masterStudiesTrial = (MasterStudiesTrial) edition.getEditionsTrialsList().get(trialID);
 
-        int numCredits = masterStudiesTrial.getCreditNum();
-        int passProbability = masterStudiesTrial.getPassProbability();
-        int creditsPassed=0;
+        int numCredits = masterStudiesTrial.getCreditNum(), passProbability = masterStudiesTrial.getPassProbability(), creditsPassed;
 
         switch (edition.getPlayerList().get(playerID).getLevel()){
             case 1 -> System.out.print(edition.getPlayerList().get(playerID).getName() + " ");
@@ -212,27 +174,25 @@ public class ExecutionManager {
         creditsPassed = willMasterStudiesPass(numCredits, passProbability);
 
         if (creditsPassed >= (numCredits/2)){
-            //System.out.println("Credits passed value= " + creditsPassed);
-            edition.getPlayerList().get(playerID).setTrialPass(true);
-            edition.getPlayerList().get(playerID).setInvestigationPoints(edition.getPlayerList().get(playerID).getInvestigationPoints() + getRewardMasterStudies(edition, playerID));
-            System.out.print("passed " + creditsPassed + "/" + numCredits + " ECTS. Congrats! PI count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
+            edition.getPlayerList().get(playerID).addPoints(3,2);
+            System.out.println("passed " + creditsPassed + "/" + numCredits + " ECTS. Congrats! PI count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
 
         } else {
-            edition.getPlayerList().get(playerID).setInvestigationPoints(edition.getPlayerList().get(playerID).getInvestigationPoints() - getPenalizationMasterStudies(edition,playerID));
-            if (edition.getPlayerList().get(playerID).getInvestigationPoints() > 3) {
-                System.out.println("passed " + creditsPassed + "/" + numCredits + " ECTS. Sorry... PI count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
-            } else {
-                System.out.println("passed " + creditsPassed + "/" + numCredits + " ECTS. Sorry... PI count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
-                edition.getPlayerList().get(playerID).setAlive(false);
+
+            if (edition.getPlayerList().get(playerID).getInvestigationPoints() <= 3) {
                 edition.getPlayerList().get(playerID).setInvestigationPoints(0);
+                System.out.println("passed " + creditsPassed + "/" + numCredits + " ECTS. Sorry... PI count: 0 - Disqualified!");
+            } else {
+                edition.getPlayerList().get(playerID).addPoints(-3,2);
+                System.out.println("passed " + creditsPassed + "/" + numCredits + " ECTS. Sorry... PI count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
             }
+
         }
     }
 
     private void submitPlayerInDoctoralThesis(Edition edition, int playerID, int trialID) {
         DoctoralThesisDefenseTrial doctoralThesisDefenseTrial = (DoctoralThesisDefenseTrial) edition.getEditionsTrialsList().get(trialID);
 
-        boolean pass = false;
         double result=0;
 
         switch (edition.getPlayerList().get(playerID).getLevel()){
@@ -245,26 +205,26 @@ public class ExecutionManager {
             result = result + (2*(i+1) - 1);
         }
         result = Math.sqrt(result);
-        System.out.println("Result of puntuation: " + result);
+
 
         if (edition.getPlayerList().get(playerID).getInvestigationPoints() >= result){
-            edition.getPlayerList().get(playerID).setTrialPass(true);
-            edition.getPlayerList().get(playerID).setInvestigationPoints(edition.getPlayerList().get(playerID).getInvestigationPoints() + getRewardDoctoralThesis(edition, playerID));
-            System.out.print("was successful. Congrats! Pi count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
+            edition.getPlayerList().get(playerID).addPoints(5,3);
+            System.out.println("was successful. Congrats! Pi count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
         } else {
-            edition.getPlayerList().get(playerID).setInvestigationPoints(edition.getPlayerList().get(playerID).getInvestigationPoints() - getPenalizationDoctoralThesis(edition, playerID));
-            System.out.print("Rejected. PI count:  " + edition.getPlayerList().get(playerID).getInvestigationPoints());
+            if (edition.getPlayerList().get(playerID).getInvestigationPoints() <= 5) {
+                edition.getPlayerList().get(playerID).setInvestigationPoints(0);
+                System.out.println("was unsuccessful. Sorry... Pi count: 0 - Disqualified!");
+            } else {
+                edition.getPlayerList().get(playerID).addPoints(-5, 3);
+                System.out.println("was unsuccessful. Sorry... Pi count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
+            }
         }
-
-
-
-
-
-
+        System.out.println("Result of puntuation: " + result);
 
     }
 
-    private void submitPlayersInBudgetRequest(Edition edition, int trialID){
+    private void submitTeamInBudgetRequest(Edition edition, int trialID){
+
         BudgetRequestTrial budgetRequestTrial = (BudgetRequestTrial) edition.getEditionsTrialsList().get(trialID);
 
         int suma = 0;
@@ -282,7 +242,7 @@ public class ExecutionManager {
                         case 2 -> System.out.print("Master " + edition.getPlayerList().get(i).getName());
                         case 3 -> System.out.print(edition.getPlayerList().get(i).getName() + ", PhD");
                     }
-                    edition.getPlayerList().get(i).setTrialPass(true);
+                    //edition.getPlayerList().get(i).setTrialPass(true);
                     edition.getPlayerList().get(i).setInvestigationPoints(edition.getPlayerList().get(i).getInvestigationPoints() + getRewardBudgetRequest(edition, i));
                     System.out.println(". PI count: " + edition.getPlayerList().get(i).getInvestigationPoints());
                 }
@@ -346,26 +306,20 @@ public class ExecutionManager {
 
         if (decision <=acc){
             return "Accepted";
-        } else if (decision < (acc + rev)){
+        } else if (decision <= (acc + rev)){
             return "Revisions";
         } else if (decision > (acc + rev)){
             return "Rejected";
         } else {
-            return "-1";
+            System.out.println("value of acceptance is: " + acc + " and value of revision is: " + rev);
+            return String.valueOf(decision);
         }
     }
 
-    private int getRewardPaperPublication(Edition edition, int quartile, int playerID){
+    private int getRewardOrPenaltyPaperPublication(int quartile, String sumres){
+        //sumres es una variable con caracter + o - para saber si le sumamos o restamos para apovechar un mismo metodo para obtener puntuacion de victoria y derrota
 
-        if (edition.getPlayerList().get(playerID).getLevel()==3) {
-            return switch (quartile) {
-                case 1 -> 8;
-                case 2 -> 6;
-                case 3 -> 4;
-                case 4 -> 2;
-                default -> -1;
-            };
-        } else {
+        if (sumres.equals("+")) {
             return switch (quartile) {
                 case 1 -> 4;
                 case 2 -> 3;
@@ -373,66 +327,17 @@ public class ExecutionManager {
                 case 4 -> 1;
                 default -> -1;
             };
-        }
-    }
-
-    private int getPenalizationPaperPublication(Edition edition, int quartile, int playerID){
-
-        if (edition.getPlayerList().get(playerID).getLevel()==1) {
+        } else if (sumres.equals("-")) {
             return switch (quartile) {
-                case 1 -> 5;
-                case 2 -> 4;
-                case 3 -> 3;
-                case 4 -> 2;
+                case 1 -> -5;
+                case 2 -> -4;
+                case 3 -> -3;
+                case 4 -> -2;
                 default -> -1;
             };
         } else {
-            return switch (quartile) {
-                case 1, 2 -> 2;
-                case 3, 4 -> 1;
-                default -> -1;
-            };
+            return -1;
         }
-    }
-
-    private int getRewardMasterStudies(Edition edition, int playerID){
-
-        return switch (edition.getPlayerList().get(playerID).getLevel()) {
-            case 1,2 -> 3;
-            case 3 -> 6;
-            default -> -1;
-        };
-
-    }
-
-    private int getPenalizationMasterStudies(Edition edition, int playerID){
-
-        return switch (edition.getPlayerList().get(playerID).getLevel()) {
-            case 1 -> 3;
-            case 2,3 -> 1;
-            default -> -1;
-        };
-
-    }
-
-    private int getRewardDoctoralThesis(Edition edition, int playerID) {
-
-        return switch (edition.getPlayerList().get(playerID).getLevel()) {
-            case 1 -> 5;
-            case 2,3 -> 10;
-            default -> -1;
-        };
-
-    }
-
-    private int getPenalizationDoctoralThesis(Edition edition, int playerID) {
-
-        return switch (edition.getPlayerList().get(playerID).getLevel()) {
-            case 1 -> 5;
-            case 2,3 -> 10;
-            default -> -1;
-        };
-
     }
 
     private String  askUserYesNo(){
@@ -461,7 +366,6 @@ public class ExecutionManager {
         return input;
     }
 
-
-
-
 }
+
+

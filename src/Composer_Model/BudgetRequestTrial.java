@@ -1,6 +1,6 @@
-package Business;
+package Composer_Model;
 
-public class BudgetRequestTrial extends Trial{
+public class BudgetRequestTrial extends Trial {
 
     private String entityName;
     private int moneyAmount;
