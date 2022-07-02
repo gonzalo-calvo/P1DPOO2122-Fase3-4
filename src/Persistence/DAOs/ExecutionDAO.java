@@ -6,8 +6,8 @@ import java.util.ArrayList;
 
 public interface ExecutionDAO {
 
-    void saveExecutionsListToFile(ArrayList<Edition> editionsList);
+    void saveExecutionToFile(Edition editionsList);
 
-    ArrayList<Edition> getExecutionsListFromFile();
+    Edition getExecutionFromFile();
 
 }

@@ -13,10 +13,8 @@ import Persistence.DAOs.ExecutionDAO;
 import Presentation.MenuController;
 import Presentation.Views.ExecutionView;
 
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.Random;
-import java.util.Scanner;
+import java.awt.*;
+import java.util.*;
 
 /**
  * Classe que s'encarrega de executar la edició de l'any actual
@@ -27,96 +25,105 @@ public class ExecutionManager {
     private MenuController menuController;
     private ExecutionView executionView;
 
-    ArrayList<Edition> executionsList;
+    private Edition editionExecute;
 
-
-    public ExecutionManager(ExecutionDAO executionDAO, MenuController menuController, ExecutionView executionView) {
-        this.executionDAO = executionDAO;
-        this.menuController = menuController;
-        this.executionView = executionView;
-        this.executionsList = executionDAO.getExecutionsListFromFile();
-    }
 
     public ExecutionManager(){
 
     }
 
+    public ExecutionManager(ExecutionDAO executionDAO, MenuController menuController, ExecutionView executionView) {
+        this.executionDAO = executionDAO;
+        this.menuController = menuController;
+        this.executionView = executionView;
+        this.editionExecute = executionDAO.getExecutionFromFile();
+    }
+
+    public void setEditionExecute(Edition editionExecute) {
+        this.editionExecute = new Edition(editionExecute.getEditionYear(), editionExecute.getNumPlayers(), editionExecute.getNumTrials(), editionExecute.getEditionsTrialsList(), editionExecute.getPlayerList(), editionExecute.getTrialExecuting());
+    }
+
 
     /**
      * Mètode general que s'encarrega d'executar la edició
-     * @param editionToExecute Objecte de tipos edició amb l'edició que ha d'executar
      */
-    public void executeEdition(Edition editionToExecute){
+    public void executeEdition(){
 
         String continueExecution = "yes";
 
-        System.out.println("\n--- The Trials " + editionToExecute.getEditionYear() + " ---\n");
+        System.out.println("\n--- The Trials " + editionExecute.getEditionYear() + " ---\n");
 
-        if (editionToExecute.getPlayerList().isEmpty()) {   //if empty --> first time executing
-            for (int i = 0; i < editionToExecute.getNumPlayers(); i++) {
+        if (editionExecute.getPlayerList().isEmpty()) {   //if empty --> first time executing
+            for (int i = 0; i < editionExecute.getNumPlayers(); i++) {
                 EngineerPlayer auxEngineer = new EngineerPlayer();
-                auxEngineer.setName(askUserNonEmptyString("Enter the player’s name (" + (i + 1) + "/" + editionToExecute.getNumPlayers() + "): "));
+                auxEngineer.setName(askUserNonEmptyString("Enter the player’s name (" + (i + 1) + "/" + editionExecute.getNumPlayers() + "): "));
                 auxEngineer.setInvestigationPoints(5);
                 auxEngineer.setLevel(1);
-                editionToExecute.getPlayerList().add(auxEngineer);
+                editionExecute.getPlayerList().add(auxEngineer);
             }
         } else {
-            for (int i = 0; i < editionToExecute.getNumPlayers(); i++) {
-                menuController.printPlayer(editionToExecute.getPlayerList().get(i));
+            for (int i = 0; i < editionExecute.getNumPlayers(); i++) {
+                menuController.printPlayer(editionExecute.getPlayerList().get(i));
             }
         }
 
-        while (editionToExecute.getNumTrials()>editionToExecute.getTrialExecuting() && continueExecution.equals("yes") && editionToExecute.isAnyoneAlive()){
+        while (editionExecute.getNumTrials()>editionExecute.getTrialExecuting() && continueExecution.equals("yes") && editionExecute.isAnyoneAlive()){
 
-            System.out.println("\nTrial #" + (editionToExecute.getTrialExecuting()+1) + " - " + editionToExecute.getEditionsTrialsList().get(editionToExecute.getTrialExecuting()).getName() + "\n");
+            System.out.println("\nTrial #" + (editionExecute.getTrialExecuting()+1) + " - " + editionExecute.getEditionsTrialsList().get(editionExecute.getTrialExecuting()).getName() + "\n");
 
-            switch (editionToExecute.getEditionsTrialsList().get(editionToExecute.getTrialExecuting()).getType()){
+            switch (editionExecute.getEditionsTrialsList().get(editionExecute.getTrialExecuting()).getType()){
                 case 1:
-                    for (int i = 0; i < editionToExecute.getNumPlayers(); i++) {
-                        if (editionToExecute.getPlayerList().get(i).isAlive()){
-                            submitPlayerInPaperPublicationTrial(editionToExecute, i, editionToExecute.getTrialExecuting());
+                    for (int i = 0; i < editionExecute.getNumPlayers(); i++) {
+                        if (editionExecute.getPlayerList().get(i).isAlive()){
+                            submitPlayerInPaperPublicationTrial(editionExecute, i, editionExecute.getTrialExecuting());
                         }
                     }
                     break;
 
                 case 2:
-                    for (int i = 0; i < editionToExecute.getNumPlayers(); i++) {
-                        if (editionToExecute.getPlayerList().get(i).isAlive()){
-                            submitPlayerInMasterStudiesTrial(editionToExecute, i, editionToExecute.getTrialExecuting());
+                    for (int i = 0; i < editionExecute.getNumPlayers(); i++) {
+                        if (editionExecute.getPlayerList().get(i).isAlive()){
+                            submitPlayerInMasterStudiesTrial(editionExecute, i, editionExecute.getTrialExecuting());
                         }
                     }
                     break;
 
                 case 3:
-                    for (int i = 0; i < editionToExecute.getNumPlayers(); i++) {
-                        if (editionToExecute.getPlayerList().get(i).isAlive()){
-                            submitPlayerInDoctoralThesis(editionToExecute, i, editionToExecute.getTrialExecuting());
+                    for (int i = 0; i < editionExecute.getNumPlayers(); i++) {
+                        if (editionExecute.getPlayerList().get(i).isAlive()){
+                            submitPlayerInDoctoralThesis(editionExecute, i, editionExecute.getTrialExecuting());
                         }
                     }
                     break;
 
                 case 4:
-                    submitTeamInBudgetRequest(editionToExecute, editionToExecute.getTrialExecuting());
+                    submitTeamInBudgetRequest(editionExecute, editionExecute.getTrialExecuting());
                     break;
 
                 default:
-                    System.out.println("Error de switch escogiendo tipo de trial. Valor switch: " + editionToExecute.getEditionsTrialsList().get(editionToExecute.getTrialExecuting()).getType());
+                    System.out.println("Error de switch escogiendo tipo de trial. Valor switch: " + editionExecute.getEditionsTrialsList().get(editionExecute.getTrialExecuting()).getType());
             }
 
             System.out.println("\nUpdating player evolution");
-            updatePlayerEvolution(editionToExecute);
+            updatePlayerEvolution(editionExecute);
 
-            editionToExecute.setTrialExecuting(editionToExecute.getTrialExecuting()+1);
+            editionExecute.setTrialExecuting(editionExecute.getTrialExecuting()+1);
 
-            if ((editionToExecute.getNumTrials()==editionToExecute.getTrialExecuting())) {
-                System.out.println("\nTHE TRIALS 2021 HAVE ENDED " + editionToExecute.howManyFinishers() + " PLAYERS WON");
+            if ((editionExecute.getNumTrials()==editionExecute.getTrialExecuting())) {
+                System.out.println("\nTHE TRIALS 2021 HAVE ENDED " + editionExecute.howManyFinishers() + " PLAYERS WON");
+                clearEditionToExecute();
             } else {
                 continueExecution = menuController.askUserYesNo();
             }
         }
 
-        if (!editionToExecute.isAnyoneAlive()){
+        if (!editionExecute.isAnyoneAlive()){
             System.out.println("\nTHE TRIALS 2021 HAVE ENDED IN FAILURE - 0 PLAYERS ENDED");
+            clearEditionToExecute();
+        }
+
+        if (continueExecution.equals("no")){
+            executionDAO.saveExecutionToFile(editionExecute);
         }
     }
 
@@ -418,13 +425,30 @@ public class ExecutionManager {
         return scanner.next();
     }
 
-
-
+    private void clearEditionToExecute(){
+        editionExecute.setEditionYear(0);
+        editionExecute.setNumTrials(0);
+        editionExecute.setEditionsTrialsList(null);
+        editionExecute.setNumPlayers(0);
+        editionExecute.setPlayerList(null);
+        editionExecute.setTrialExecuting(0);
+    }
 
 
     public void saveExecutionsListToFile() {
-        executionDAO.saveExecutionsListToFile(this.executionsList);
+        executionDAO.saveExecutionToFile(this.editionExecute);
     }
+
+    public boolean isThisYearsEditionExecuting() {
+        editionExecute.toCSV();
+        if (this.editionExecute.getNumPlayers() == 0){
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
 }
 
 

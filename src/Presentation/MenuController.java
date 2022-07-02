@@ -1,10 +1,13 @@
 package Presentation;
 
+import Business.Editions.Edition;
 import Business.Editions.EditionsManager;
 import Business.Execution.ExecutionManager;
 import Business.Players.Player;
 import Business.Trials.TrialsManager;
 import Presentation.Views.MainView;
+
+
 
 import java.util.Calendar;
 
@@ -54,6 +57,9 @@ public class MenuController {
                 }
             }while (option != 3);
 
+            trialsManager.saveTrialsListToFile();
+            editionsManager.saveEditionsListToFile();
+
         }else if (role == 'B'){             // CONDUCTOR
             boolean foundEdition = false;
             int editionId=0;
@@ -68,16 +74,24 @@ public class MenuController {
                 }
             }
 
-            if (foundEdition) {
-                executionManager.executeEdition(editionsManager.getEditionsList().get(editionId));
+            if (executionManager.isThisYearsEditionExecuting()){
+                System.out.println("entro en 1");
+                executionManager.executeEdition();
             } else {
-                mainView.printSingleLine("No edition is defined for the current year (" + year + ").");
+                System.out.println("entro en 2");
+                if (foundEdition) {
+                    System.out.println("entro en 3");
+                    executionManager.setEditionExecute(editionsManager.getEditionsList().get(editionId));
+                    executionManager.executeEdition();
+                } else {
+                    mainView.printSingleLine("No edition is defined for the current year (" + year + ").");
+                }
             }
+
+
         }
 
-        trialsManager.saveTrialsListToFile();
-        editionsManager.saveEditionsListToFile();
-        executionManager.saveExecutionsListToFile();
+
 
         mainView.printSingleLine("\nShutting down...");
     }

@@ -12,9 +12,9 @@ import java.util.Scanner;
  */
 public class TrialsManager {
 
-    private TrialsDAO trialsDAO;
-    private MenuController menuController;
-    private TrialView trialView;
+    private final TrialsDAO trialsDAO;
+    private final MenuController menuController;
+    private final TrialView trialView;
 
     private ArrayList<Trial> trialList;
 
@@ -139,7 +139,8 @@ public class TrialsManager {
             trial_exists = false;
             menuController.printSingleLine("Enter the trial's name: ");
             trial_name = menuController.scanLine();
-            if (compareIfTrialInTrialList(trial_name)){
+            if (compareIfTrialInTrialList(trial_name) || trial_name.isBlank()){
+                menuController.printSingleLine("Trial name is empty or already exists");
                 trial_exists=true;
             }
         }while (trial_exists);
@@ -173,7 +174,7 @@ public class TrialsManager {
                 menuController.printSingleLine("\nWrong quartile, try again.\n");
             }
 
-        }while (validate);
+        }while (!validate);
 
         // PERCENTAGES
         do {
@@ -214,8 +215,9 @@ public class TrialsManager {
             trial_exists = false;
             menuController.printSingleLine("\nEnter the trial's name: ");
             trial_name = menuController.scanLine();
-            if (compareIfTrialInTrialList(trial_name)){
+            if (compareIfTrialInTrialList(trial_name) || trial_name.isBlank()){
                 trial_exists=true;
+                menuController.printSingleLine("Trial name is empty or already exists");
             }
         }while (trial_exists);
         masterStudiesTrial.setName(trial_name);
@@ -248,7 +250,7 @@ public class TrialsManager {
     private DoctoralThesisDefenseTrial fillNewDoctoralThesisDefenseTrial() {
         DoctoralThesisDefenseTrial doctoralThesisDefenseTrial = new DoctoralThesisDefenseTrial();
 
-        boolean trial_exists;
+        boolean trial_exists = false;
         String trial_name, journal_name;
 
         //SET TYPE
@@ -256,12 +258,13 @@ public class TrialsManager {
 
         //FIELD OF STUDY
         do {
-            trial_exists = false;
             menuController.printSingleLine("\nEnter the trial's name: ");
             trial_name = menuController.scanLine();
-            if (compareIfTrialInTrialList(trial_name)){
+            if (compareIfTrialInTrialList(trial_name) || trial_name.isBlank()){
                 menuController.printSingleLine("The trial's name already exists, introduce a different one");
                 trial_exists=true;
+            } else {
+                menuController.printSingleLine("Trial name is empty or already exists");
             }
         }while (trial_exists);
         doctoralThesisDefenseTrial.setName(trial_name);
@@ -289,7 +292,7 @@ public class TrialsManager {
     private BudgetRequestTrial fillNewBudgetRequestTrial() {
         BudgetRequestTrial budgetRequestTrial = new BudgetRequestTrial();
 
-        boolean trial_exists;
+        boolean trial_exists = false;
         String trial_name, journal_name;
 
         //SET TYPE
@@ -297,14 +300,15 @@ public class TrialsManager {
 
         //FIELD OF STUDY
         do {
-            trial_exists = false;
             menuController.printSingleLine("\nEnter the trial's name: ");
             trial_name = menuController.scanLine();
-            if (compareIfTrialInTrialList(trial_name)){
+            if (compareIfTrialInTrialList(trial_name) || trial_name.isBlank()){
                 trial_exists=true;
                 menuController.printSingleLine("\nTrial name already exists.\n");
+            } else {
+                menuController.printSingleLine("Trial name is empty or already exists");
             }
-        }while (trial_exists || trial_name == null || trial_name.isEmpty());
+        }while (trial_exists);
         budgetRequestTrial.setName(trial_name);
 
         //NAME OF ENTITY

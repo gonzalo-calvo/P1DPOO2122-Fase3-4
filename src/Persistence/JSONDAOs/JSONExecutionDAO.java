@@ -7,12 +7,12 @@ import java.util.ArrayList;
 
 public class JSONExecutionDAO implements ExecutionDAO {
     @Override
-    public void saveExecutionsListToFile(ArrayList<Edition> editionsList) {
+    public void saveExecutionToFile(Edition editionsList) {
 
     }
 
     @Override
-    public ArrayList<Edition> getExecutionsListFromFile() {
+    public Edition getExecutionFromFile() {
         return null;
     }
 }

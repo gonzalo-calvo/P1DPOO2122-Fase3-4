@@ -164,7 +164,7 @@ public class FilesController {
 
         try {
             //System.out.println("about to read");
-            loadTrialsListFromCSV(trialList);
+            //loadTrialsListFromCSV(trialList);
             reader = new JsonReader(new FileReader(jsonTrialsFile));
         } catch (FileNotFoundException e) {
             System.out.println("The JSON file could not be read, the 'path' or the content of the file is incorrect");
