@@ -1,24 +1,39 @@
-package Business;
+package Business.Editions;
 
-import Composer_Business.*;
-import com.google.gson.Gson;
+import Business.Trials.*;
+import Persistence.DAOs.EditionsDAO;
+import Presentation.MenuController;
+import Presentation.Views.EditionView;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Aquesta classe s'encarrega de gestionar les edicions
+ */
 public class EditionsManager {
+
+    private EditionsDAO editionsDAO;
+    private MenuController menuController;
+    private EditionView editionView;
 
     private ArrayList<Trial> trialsList;
     private ArrayList<Edition> editionsList = new ArrayList<>();
-    File file = new File("EditionList.csv");
-    File jsonFile = new File("JsonEditionList.json");
+
 
     public EditionsManager(ArrayList<Trial> trialsList) {
         this.trialsList = trialsList;
+    }
+
+    public EditionsManager(EditionsDAO editionsDAO, MenuController menuController, EditionView editionView) {
+        this.editionsDAO = editionsDAO;
+        this.menuController = menuController;
+        this.editionView = editionView;
+        this.editionsList = editionsDAO.getEditionsListFromFile();
+    }
+
+    public EditionsManager(){
+
     }
 
     public ArrayList<Trial> getTrialsList() {
@@ -38,6 +53,9 @@ public class EditionsManager {
     }
 
 
+    /**
+     * Aquest mètode s'encarrega de crear una edició nova demanant dades a l'usuari
+     */
     public void createEdition() {
 
         Edition edition = new Edition();
@@ -46,7 +64,7 @@ public class EditionsManager {
         boolean error = false;
 
         do {
-            year = askUserOptionBetweenNumbers("\nEnter the edition’s year: " , 2022, 999999999);
+            year = menuController.askUserOptionBetweenNumbers("\nEnter the edition’s year: " , 2022, 999999999);
             for (Edition value : editionsList) {
                 if (value.getEditionYear() == year) {
                     System.out.println("This edition already exists!");
@@ -58,10 +76,10 @@ public class EditionsManager {
         }while (error);
         edition.setEditionYear(year);
 
-        num_players = askUserOptionBetweenNumbers("Enter the initial number of players [1-5]: ", 1, 5);
+        num_players = menuController.askUserOptionBetweenNumbers("Enter the initial number of players [1-5]: ", 1, 5);
         edition.setNumPlayers(num_players);
 
-        num_trials = askUserOptionBetweenNumbers("Enter the number of trials [3-12]: ", 3, 12);
+        num_trials = menuController.askUserOptionBetweenNumbers("Enter the number of trials [3-12]: ", 3, 12);
         edition.setNumTrials(num_trials);
 
         System.out.println("\n     --- Trials ---\n");
@@ -71,7 +89,7 @@ public class EditionsManager {
         }
 
         for (int i = 0; i < num_trials; i++) {
-            int trial = askUserOptionBetweenNumbers("Pick a trial (" + (i+1) + "/" + num_trials + "): " , 1, trialsList.size())-1;
+            int trial = menuController.askUserOptionBetweenNumbers("Pick a trial (" + (i+1) + "/" + num_trials + "): " , 1, trialsList.size())-1;
 
             if (trialsList.get(trial).getType() == 1) {
                 PaperPublicationTrial paperPublicationTrial = (PaperPublicationTrial) trialsList.get(trial);
@@ -94,15 +112,17 @@ public class EditionsManager {
 
     }
 
+    /**
+     * Aquest mètode s'encarrega de printar la llista d'edicions
+     */
     public void listEditions() {
 
         int option;
-
-
+        
             if (editionsList.size()>0) {
                 System.out.println("Here are the current editions, do you want to see more details or go back?");
                 printEditions();
-                option = askUserOptionBetweenNumbers("Enter an option: ", 1, editionsList.size()+1) - 1;
+                option = menuController.askUserOptionBetweenNumbers("Enter an option: ", 1, editionsList.size()+1) - 1;
                 if (editionsList.size()>option) {
                     editionsList.get(option).printDetails();
                 }
@@ -111,21 +131,20 @@ public class EditionsManager {
             }
         }
 
-
-
-
-
+    /**
+     * Aques mètode s'encarrega de duplicar una edició canviant any i numero de jugadors
+     */
     public void duplicateEditions() {
         int option, yearToClone, numPlayersToClone;
         System.out.println("\nWhich edition do you want to clone?");
 
         printEditions();
 
-        option = askUserOptionBetweenNumbers("Enter an option: ", 1, editionsList.size()+1) - 1;
+        option = menuController.askUserOptionBetweenNumbers("Enter an option: ", 1, editionsList.size()+1) - 1;
 
         if (editionsList.get(option).getTrialExecuting()==0) {
-            yearToClone = askUserOptionBetweenNumbers("\nEnter the new edition’s year: ", 1, 9999999);
-            numPlayersToClone = askUserOptionBetweenNumbers("Enter the new edition’s initial number of players [1-5]: ", 1, 5);
+            yearToClone = menuController.askUserOptionBetweenNumbers("\nEnter the new edition’s year: ", 1, 9999999);
+            numPlayersToClone = menuController.askUserOptionBetweenNumbers("Enter the new edition’s initial number of players [1-5]: ", 1, 5);
 
             cloneEdition(editionsList.get(option), yearToClone, numPlayersToClone);
             System.out.println("The edition was cloned successfully!");
@@ -135,14 +154,17 @@ public class EditionsManager {
 
     }
 
+    /**
+     * Aquest mètode s'encarrega d'esborrar una edició
+     */
     public void deleteEdition(){
         int option, confirmationYear;
         System.out.println("\nWhich edition do you want to delete?");
 
         printEditions();
 
-        option = askUserOptionBetweenNumbers("Enter an option: ", 1, editionsList.size()+1) - 1;
-        confirmationYear = askUserOptionBetweenNumbers("\nEnter the edition’s year for confirmation: ", 1, 9999999);
+        option = menuController.askUserOptionBetweenNumbers("Enter an option: ", 1, editionsList.size()+1) - 1;
+        confirmationYear = menuController.askUserOptionBetweenNumbers("\nEnter the edition’s year for confirmation: ", 1, 9999999);
 
         if (confirmationYear == editionsList.get(option).getEditionYear()){
             editionsList.remove(option);
@@ -156,31 +178,12 @@ public class EditionsManager {
 
     }
 
-
-    private int askUserOptionBetweenNumbers(String text, int min, int max){
-        int option;
-        String input;
-
-        Scanner scanner = new Scanner(System.in);
-
-        do{
-            System.out.print(text);
-            input = scanner.nextLine();
-
-            try {
-                option = Integer.parseInt(input);
-            } catch (NumberFormatException exception) {
-                option = -1;
-            }
-
-            if (option<min || option>max){
-                System.out.println("\nWrong input! Try again.");
-            }
-
-        } while (option<min || option>max);
-        return option;
-    }
-
+    /**
+     * Aquest mètode s'encarrega de clonar una edició
+     * @param edition Paràmetre amb l'edició que es vol clonar
+     * @param year Any de l'edició nova
+     * @param numPlayers Numero de jugadors que es vol introduir a la nova edició
+     */
     public void cloneEdition(Edition edition, int year, int numPlayers){
         ArrayList<Trial> trialsClone = new ArrayList<>(edition.getEditionsTrialsList());
 
@@ -189,7 +192,9 @@ public class EditionsManager {
 
     }
 
-
+    /**
+     * Mètode que printa directament totes les edicions de la llista d'edicions
+     */
     public void printEditions(){
 
         System.out.print("\n");
@@ -200,39 +205,7 @@ public class EditionsManager {
 
     }
 
-    public void printInfoYearEdition(int year){
-        int aux=0;
-        for (int i = 0; i < editionsList.size(); i++) {
-            if (year==editionsList.get(i).getEditionYear()){
-                aux=i;
-            }
-        }
-        editionsList.get(aux).printDetails();
-
-        for (int i = 0; i < editionsList.get(aux).getPlayerList().size(); i++) {
-            System.out.println("Player name:" + editionsList.get(aux).getPlayerList().get(i).getName());
-            System.out.println("Player PI: " + editionsList.get(aux).getPlayerList().get(i).getInvestigationPoints());
-            System.out.println("Is alive? " + editionsList.get(aux).getPlayerList().get(i).isAlive());
-        }
+    public void saveEditionsListToFile() {
+        editionsDAO.saveEditionsListToFile(this.editionsList);
     }
-
-
-    public void loadEditionsListFromCSV(){
-
-        try{
-            Scanner scanner = new Scanner(file);
-            while (scanner.hasNextLine()){
-                String line = scanner.nextLine();
-                Edition edition = new Edition();
-                edition.setEditionValuesFromCSV(line);
-                editionsList.add(edition);
-            }
-            System.out.println("Editions loaded successfully");
-            //System.out.println("Aqui las printo: ");
-            //printInfoYearEdition(2022);
-        } catch (FileNotFoundException e){
-            System.out.println("Error with file, couldn't load trials");
-        }
-    }
-
 }

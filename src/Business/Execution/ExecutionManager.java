@@ -1,23 +1,51 @@
-package Business;
+package Business.Execution;
 
-import Composer_Business.BudgetRequestTrial;
-import Composer_Business.DoctoralThesisDefenseTrial;
-import Composer_Business.MasterStudiesTrial;
-import Composer_Business.PaperPublicationTrial;
-import Conductor_Business.DoctorPlayer;
-import Conductor_Business.EngineerPlayer;
-import Conductor_Business.MasterPlayer;
-import Conductor_Business.Player;
+import Business.Editions.Edition;
+import Business.Trials.BudgetRequestTrial;
+import Business.Trials.DoctoralThesisDefenseTrial;
+import Business.Trials.MasterStudiesTrial;
+import Business.Trials.PaperPublicationTrial;
+import Business.Players.DoctorPlayer;
+import Business.Players.EngineerPlayer;
+import Business.Players.MasterPlayer;
+import Business.Players.Player;
+import Persistence.DAOs.ExecutionDAO;
+import Presentation.MenuController;
+import Presentation.Views.ExecutionView;
 
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Scanner;
 
+/**
+ * Classe que s'encarrega de executar la edició de l'any actual
+ */
 public class ExecutionManager {
 
-    public ExecutionManager() {
+    private ExecutionDAO executionDAO;
+    private MenuController menuController;
+    private ExecutionView executionView;
+
+    ArrayList<Edition> executionsList;
+
+
+    public ExecutionManager(ExecutionDAO executionDAO, MenuController menuController, ExecutionView executionView) {
+        this.executionDAO = executionDAO;
+        this.menuController = menuController;
+        this.executionView = executionView;
+        this.executionsList = executionDAO.getExecutionsListFromFile();
     }
 
+    public ExecutionManager(){
+
+    }
+
+
+    /**
+     * Mètode general que s'encarrega d'executar la edició
+     * @param editionToExecute Objecte de tipos edició amb l'edició que ha d'executar
+     */
     public void executeEdition(Edition editionToExecute){
 
         String continueExecution = "yes";
@@ -26,15 +54,15 @@ public class ExecutionManager {
 
         if (editionToExecute.getPlayerList().isEmpty()) {   //if empty --> first time executing
             for (int i = 0; i < editionToExecute.getNumPlayers(); i++) {
-                Player auxPlayer = new EngineerPlayer();
-                auxPlayer.setName(askUserNonEmptyString("Enter the player’s name (" + (i + 1) + "/" + editionToExecute.getNumPlayers() + "): "));
-                auxPlayer.setInvestigationPoints(5);
-                auxPlayer.setLevel(1);
-                editionToExecute.getPlayerList().add(auxPlayer);
+                EngineerPlayer auxEngineer = new EngineerPlayer();
+                auxEngineer.setName(askUserNonEmptyString("Enter the player’s name (" + (i + 1) + "/" + editionToExecute.getNumPlayers() + "): "));
+                auxEngineer.setInvestigationPoints(5);
+                auxEngineer.setLevel(1);
+                editionToExecute.getPlayerList().add(auxEngineer);
             }
         } else {
             for (int i = 0; i < editionToExecute.getNumPlayers(); i++) {
-                printPlayer(editionToExecute.getPlayerList().get(i));
+                menuController.printPlayer(editionToExecute.getPlayerList().get(i));
             }
         }
 
@@ -83,7 +111,7 @@ public class ExecutionManager {
             if ((editionToExecute.getNumTrials()==editionToExecute.getTrialExecuting())) {
                 System.out.println("\nTHE TRIALS 2021 HAVE ENDED " + editionToExecute.howManyFinishers() + " PLAYERS WON");
             } else {
-                continueExecution = askUserYesNo();
+                continueExecution = menuController.askUserYesNo();
             }
         }
 
@@ -92,6 +120,10 @@ public class ExecutionManager {
         }
     }
 
+    /**
+     * Mètode que s'encarrega de veure si els jugadors pujen de nivell o no després de cada trial
+     * @param edition Se li passa la edició que s'esta executant per extreure informació d'ella
+     */
     private void updatePlayerEvolution(Edition edition) {
 
         for (int i = 0; i < edition.getNumPlayers(); i++) {
@@ -119,6 +151,12 @@ public class ExecutionManager {
         }
     }
 
+    /**
+     * Mètode que sotmet al jugador a la trial de tipos paper publication
+     * @param edition Objecte amb informació de la edició
+     * @param playerID Identificador del jugador dintre de la llista de jugadors
+     * @param trialID Identificació de la trial dintre de la llista de trials
+     */
     private void submitPlayerInPaperPublicationTrial(Edition edition, int playerID, int trialID){
 
         PaperPublicationTrial paperPublicationTrial = (PaperPublicationTrial) edition.getEditionsTrialsList().get(trialID);
@@ -159,6 +197,12 @@ public class ExecutionManager {
 
     }
 
+    /**
+     * Mètode que sotmet al jugador a la trial de tipos master studies
+     * @param edition Objecte amb informació de la edició
+     * @param playerID Identificador del jugador dintre de la llista de jugadors
+     * @param trialID Identificació de la trial dintre de la llista de trials
+     */
     private void submitPlayerInMasterStudiesTrial(Edition edition, int playerID, int trialID){
 
         MasterStudiesTrial masterStudiesTrial = (MasterStudiesTrial) edition.getEditionsTrialsList().get(trialID);
@@ -190,6 +234,12 @@ public class ExecutionManager {
         }
     }
 
+    /**
+     * Mètode que sotmet al jugador a la trial de tipos doctoral thesis
+     * @param edition Objecte amb informació de la edició
+     * @param playerID Identificador del jugador dintre de la llista de jugadors
+     * @param trialID Identificador de la trial dintre de la llista de trials
+     */
     private void submitPlayerInDoctoralThesis(Edition edition, int playerID, int trialID) {
         DoctoralThesisDefenseTrial doctoralThesisDefenseTrial = (DoctoralThesisDefenseTrial) edition.getEditionsTrialsList().get(trialID);
 
@@ -223,6 +273,11 @@ public class ExecutionManager {
 
     }
 
+    /**
+     * Mètode que sotmet a tots els jugadors a la trial de tipos budget request
+     * @param edition Objecte amb l'informació de la edició
+     * @param trialID Identificador de la trial dintre de la llista de trials
+     */
     private void submitTeamInBudgetRequest(Edition edition, int trialID){
 
         BudgetRequestTrial budgetRequestTrial = (BudgetRequestTrial) edition.getEditionsTrialsList().get(trialID);
@@ -256,48 +311,12 @@ public class ExecutionManager {
         }
     }
 
-    private int getRewardBudgetRequest(Edition edition, int playerID) {
-
-        int playerScore = edition.getPlayerList().get(playerID).getInvestigationPoints();
-
-        if (Math.floorMod(playerScore,2)>0){
-            return ((playerScore + 1)/2);
-        } else {
-            return (playerScore/2);
-        }
-
-    }
-
-    private int willMasterStudiesPass(int numCredits, int passProbability) {
-        Random rand = new Random();
-        int pass, creditsPassed=0;
-
-        for (int i = 0; i < numCredits; i++) {
-            pass = rand.nextInt(100);
-            //System.out.println("Pass[" + i + "] = " + pass);
-            if (pass<passProbability){
-                creditsPassed++;
-                //System.out.println("Total credit passed = " + creditsPassed);
-            }
-        }
-
-        return creditsPassed;
-    }
-
-    private String askUserNonEmptyString(String text){
-
-        Scanner scanner = new Scanner(System.in);
-        System.out.print(text );
-
-        return scanner.next();
-    }
-
-    private void printPlayer(Player player){
-
-        System.out.println("Player name: " + player.getName() + " , Player Investigation Points: " + player.getInvestigationPoints() + " , Is player alive? " + player.isAlive());
-
-    }
-
+    /**
+     * Mètode que genera un numer aleatori i mira quin resultat ha obtingut l'usuari dintre de les provabilitat
+     * @param acc Valor de acceptació
+     * @param rev Valor de revisió
+     * @return Retorna una string amb el resultat (accepted, revisions, rejected)
+     */
     private String getRandomDecisionPaperPublication(int acc, int rev){
         int decision=0;
         Random rand = new Random();
@@ -316,6 +335,12 @@ public class ExecutionManager {
         }
     }
 
+    /**
+     * Mètode que calcula la puntuació que treu l'usuari depenent el "quartile" de la prova
+     * @param quartile Valor de la prova per treure la puntuació
+     * @param sumres Identificador per saber si la puntuació es suma o resta depenent de si ha passat l'usuari o no la prova
+     * @return Retorna un valor de tipos integer amb la puntuació que li toca
+     */
     private int getRewardOrPenaltyPaperPublication(int quartile, String sumres){
         //sumres es una variable con caracter + o - para saber si le sumamos o restamos para apovechar un mismo metodo para obtener puntuacion de victoria y derrota
 
@@ -340,32 +365,66 @@ public class ExecutionManager {
         }
     }
 
-    private String  askUserYesNo(){
-        boolean check = false;
-        Scanner scanner = new Scanner(System.in);
-        String input = null;
-        while (!check) {
+    /**
+     * Mètode que calcula de manera aleatòria la quantitat de crèdits que pasa l'usuari
+     * @param numCredits Número de crèdits que ha de cursar l'usuari
+     * @param passProbability Dificultat de passar el crèdit
+     * @return Retorna la quantitat de crèdits que ha passat l'usuari
+     */
+    private int willMasterStudiesPass(int numCredits, int passProbability) {
+        Random rand = new Random();
+        int pass, creditsPassed=0;
 
-            System.out.print("\nContinue the execution? [yes/no]: ");
-
-            try {
-                input = scanner.nextLine().toLowerCase(Locale.ROOT);
-                if (input.equals("yes")){
-                    check=true;
-                } else if (input.equals("no")){
-                    check=true;
-                } else {
-                    System.out.println("The input must be 'yes' or 'no'");
-                }
-                
-            } catch (Exception ex){
-                System.out.println("The input must be 'yes' or 'no'");
-                check = false;
+        for (int i = 0; i < numCredits; i++) {
+            pass = rand.nextInt(100);
+            //System.out.println("Pass[" + i + "] = " + pass);
+            if (pass<passProbability){
+                creditsPassed++;
+                //System.out.println("Total credit passed = " + creditsPassed);
             }
         }
-        return input;
+
+        return creditsPassed;
     }
 
+    /**
+     * Mètode que calcula si el grup ha obtingut el pressupost
+     * @param edition Objecte amb l'informació de l'edició
+     * @param playerID Identificador del jugador dintre de la llista de jugadors
+     * @return Retorna la puntuació que li pertoca al jugador
+     */
+    private int getRewardBudgetRequest(Edition edition, int playerID) {
+
+        int playerScore = edition.getPlayerList().get(playerID).getInvestigationPoints();
+
+        if (Math.floorMod(playerScore,2)>0){
+            return ((playerScore + 1)/2);
+        } else {
+            return (playerScore/2);
+        }
+
+    }
+
+    /**
+     * Mètode que demana a l'usuari una string que no sigui vuida
+     * @param text Text a printar per pantalla
+     * @return Retorna la string introduida per l'usuari
+     */
+    private String askUserNonEmptyString(String text){
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.print(text );
+
+        return scanner.next();
+    }
+
+
+
+
+
+    public void saveExecutionsListToFile() {
+        executionDAO.saveExecutionsListToFile(this.executionsList);
+    }
 }
 
 

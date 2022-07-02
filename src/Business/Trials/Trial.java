@@ -1,5 +1,8 @@
-package Composer_Business;
+package Business.Trials;
 
+/**
+ * La classe trial es la classe pare de quatre altres tipos de classe
+ */
 public abstract class Trial {
     protected String name;
     protected int type;

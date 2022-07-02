@@ -1,6 +1,10 @@
-package Composer_Business;
+package Business.Trials;
 
+/**
+ * Subclasse PaperPublicationTrial de la classe pare trial
+ */
 public class PaperPublicationTrial extends Trial {
+
     private String journalName;
     private int quartile;
     private int acceptanceProbability;
@@ -21,12 +25,6 @@ public class PaperPublicationTrial extends Trial {
     public PaperPublicationTrial() {
     }
 
-
-
-
-    public String getTrialNameDetail() {
-        return name + " (Paper submission)";
-    }
 
     public String getJournalName() {
         return journalName;
@@ -68,6 +66,11 @@ public class PaperPublicationTrial extends Trial {
         this.rejectionProbability = rejectionProbability;
     }
 
+
+    /**
+     * Mètode que se li passa una String i extreu valors per omplir informació de la trial
+     * @param line String tipos CSV amb l'informació de la trial
+     */
     public void setValuesFromCSV(String line){
         String[] values = line.split("_");
         //System.out.println("line: " + line);
@@ -79,18 +82,13 @@ public class PaperPublicationTrial extends Trial {
         rejectionProbability = Integer.parseInt(values[6]);
     }
 
+    /**
+     * Mètode que genera una string amb les dades de la trial per guarda-lo als fitxers csv
+     * @return Retorna una string amb les dades de la trial
+     */
     public String toCSV(){
         return "1_" + name + "_" + journalName + "_" + quartile + "_" + acceptanceProbability + "_" + revisionProbability + "_" + rejectionProbability;
     }
-
-    public void printDetails(){
-        System.out.println("\nTrial: " + this.name + " (Paper publication)");
-        System.out.println("Journal: " + this.journalName + " (Q" + this.quartile + ")");
-        System.out.println("Chances: " + this.acceptanceProbability + "% acceptance, " + this.revisionProbability + "% revision, " + this.rejectionProbability + "% rejection\n");
-
-    }
-
-
 
 
 

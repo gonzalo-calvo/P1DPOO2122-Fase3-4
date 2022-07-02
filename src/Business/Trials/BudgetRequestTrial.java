@@ -1,9 +1,13 @@
-package Composer_Business;
+package Business.Trials;
 
+/**
+ * Subclasse BudgetRequestTrial de la classe pare trial
+ */
 public class BudgetRequestTrial extends Trial {
 
     private String entityName;
     private int moneyAmount;
+
 
     public BudgetRequestTrial(String trialName, String entityName, int moneyAmount) {
         name = trialName;
@@ -13,6 +17,7 @@ public class BudgetRequestTrial extends Trial {
 
     public BudgetRequestTrial() {
     }
+
 
     public String getEntityName() {
         return entityName;
@@ -30,6 +35,11 @@ public class BudgetRequestTrial extends Trial {
         this.moneyAmount = moneyAmount;
     }
 
+
+    /**
+     * Mètode que se li passa una String i extreu valors per omplir informació de la trial
+     * @param line String tipos CSV amb l'informació de la trial
+     */
     public void setValuesFromCSV(String line){
         String[] values = line.split("_");
         //System.out.println("line: " + line);
@@ -38,13 +48,13 @@ public class BudgetRequestTrial extends Trial {
         moneyAmount = Integer.parseInt(values[3]);
     }
 
+    /**
+     * Mètode que genera una string amb les dades de la trial per guarda-lo als fitxers csv
+     * @return Retorna una string amb les dades de la trial
+     */
     public String toCSV(){
         return "4_" + name + "_" + entityName + "_" + moneyAmount;
     }
 
-    public void printDetails(){
-        System.out.println("\nTrial: " + this.name + " (Budget request)");
-        System.out.println("Entity: " + this.entityName);
-        System.out.println("Budget: " + this.moneyAmount + " €");
-    }
+
 }

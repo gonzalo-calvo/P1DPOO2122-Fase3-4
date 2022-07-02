@@ -1,5 +1,8 @@
-package Conductor_Business;
+package Business.Players;
 
+/**
+ * La classe player de tipus abstracta i crearà objectes per tal de que juguin les partides
+ */
 public abstract class Player {
 
     protected String name;
@@ -14,6 +17,7 @@ public abstract class Player {
 
     public Player() {
     }
+
 
     public String getName() {
         return name;
@@ -43,10 +47,19 @@ public abstract class Player {
         this.investigationPoints = investigationPoints;
     }
 
+
+    /**
+     * Mètode que genera una string amb les dades del jugador per guarda-lo als fitxers csv
+     * @return Retorna una string amb les dades del jugador
+     */
     public String toCSV(){
         return name + "-" + investigationPoints +  "-" + level;
     }
 
+    /**
+     * Mètode que se li passa una String i extreu valors per omplir informació de cada jugador
+     * @param line String tipos CSV amb l'informació del jugador
+     */
     public void setPlayerValuesFromCSV(String line){
         String[] values = line.split("-");
         name = values[0];
@@ -57,8 +70,12 @@ public abstract class Player {
         level = Integer.parseInt(values[2]);
     }
 
+    /**
+     * Mètode canviat mitjançant override en el que, segons el tipos de jugador, guardarà una puntuació o una altre ja que cada "fill" tindrà una puntuació o una altre
+     * @param points Quantitat de punts generals abans de gestionar per la classe fill i finalment guardar-los
+     * @param trial_type Tipos de trial per identificar si canvia de tipos de player
+     */
    public void addPoints(int points, int trial_type){
-
     }
 
 }

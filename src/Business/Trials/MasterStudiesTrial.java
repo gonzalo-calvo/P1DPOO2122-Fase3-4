@@ -1,10 +1,14 @@
-package Composer_Business;
+package Business.Trials;
 
+/**
+ * Subclasse MasterStudiesTrial de la classe pare trial
+ */
 public class MasterStudiesTrial extends Trial {
 
     private String masterName;
     private int creditNum;
     private int passProbability;
+
 
     public MasterStudiesTrial(String trialName, String masterName, int creditNum, int passProbability) {
         name = trialName;
@@ -16,6 +20,7 @@ public class MasterStudiesTrial extends Trial {
     public MasterStudiesTrial() {
 
     }
+
 
     public String getMasterName() {
         return masterName;
@@ -41,6 +46,11 @@ public class MasterStudiesTrial extends Trial {
         this.passProbability = passProbability;
     }
 
+
+    /**
+     * Mètode que se li passa una String i extreu valors per omplir informació de la trial
+     * @param line String tipos CSV amb l'informació de la trial
+     */
     public void setValuesFromCSV(String line){
         String[] values = line.split("_");
         //System.out.println("line: " + line);
@@ -50,13 +60,14 @@ public class MasterStudiesTrial extends Trial {
         passProbability = Integer.parseInt(values[4]);
     }
 
+    /**
+     * Mètode que genera una string amb les dades de la trial per guarda-lo als fitxers csv
+     * @return Retorna una string amb les dades de la trial
+     */
     public String toCSV(){
         return "2_" + name + "_" + masterName + "_" + creditNum + "_" + passProbability;
     }
 
-    public void printDetails(){
-        System.out.println("\nTrial: " + this.name + " (Master studies)");
-        System.out.println("Master: " + this.masterName);
-        System.out.println("ECTS: " + this.creditNum + ", with a " + this.passProbability + "chance to pass each one");
-    }
+
+
 }
