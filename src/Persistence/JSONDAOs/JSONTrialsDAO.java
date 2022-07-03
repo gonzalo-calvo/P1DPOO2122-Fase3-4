@@ -39,7 +39,7 @@ public class JSONTrialsDAO implements TrialsDAO {
 
             Object obj = jsonParser.parse(new FileReader(jsonTrialsFile));
             JSONArray trialListJSON = (JSONArray) obj;
-            System.out.println("json list is: " + trialListJSON);
+            //System.out.println("json list is: " + trialListJSON);
 
             Iterator<JSONObject> trialsListJSON_iterator = trialListJSON.iterator();
 
@@ -58,7 +58,7 @@ public class JSONTrialsDAO implements TrialsDAO {
                         paperPublicationTrial.setRevisionProbability(Integer.parseInt(theme.get("revisionProbability").toString()));
                         paperPublicationTrial.setRejectionProbability(Integer.parseInt(theme.get("rejectionProbability").toString()));
                         trialList.add(paperPublicationTrial);
-                        System.out.println("1");
+                        //System.out.println("1");
                         break;
                     case "2":
                         MasterStudiesTrial masterStudiesTrial = new MasterStudiesTrial();
@@ -68,7 +68,7 @@ public class JSONTrialsDAO implements TrialsDAO {
                         masterStudiesTrial.setCreditNum(Integer.parseInt(theme.get("creditNum").toString()));
                         masterStudiesTrial.setPassProbability(Integer.parseInt(theme.get("passProbability").toString()));
                         trialList.add(masterStudiesTrial);
-                        System.out.println("2");
+                        //System.out.println("2");
                         break;
                     case "3":
                         DoctoralThesisDefenseTrial doctoralThesisDefenseTrial = new DoctoralThesisDefenseTrial();
@@ -77,7 +77,7 @@ public class JSONTrialsDAO implements TrialsDAO {
                         doctoralThesisDefenseTrial.setFieldOfStudy(theme.get("fieldOfStudy").toString());
                         doctoralThesisDefenseTrial.setDifficulty(Integer.parseInt(theme.get("difficulty").toString()));
                         trialList.add(doctoralThesisDefenseTrial);
-                        System.out.println("3");
+                        //System.out.println("3");
                         break;
                     case "4":
                         BudgetRequestTrial budgetRequestTrial = new BudgetRequestTrial();
@@ -86,7 +86,7 @@ public class JSONTrialsDAO implements TrialsDAO {
                         budgetRequestTrial.setEntityName(theme.get("entityName").toString());
                         budgetRequestTrial.setMoneyAmount(Integer.parseInt(theme.get("moneyAmount").toString()));
                         trialList.add(budgetRequestTrial);
-                        System.out.println("4");
+                        //System.out.println("4");
                         break;
 
                 }
