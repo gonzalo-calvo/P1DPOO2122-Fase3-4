@@ -64,9 +64,6 @@ public abstract class Player {
         String[] values = line.split("-");
         name = values[0];
         investigationPoints = Integer.parseInt(values[1]);
-        //System.out.println("Value of values[2]: " + values[2]);
-        //System.out.println("Before: " + setTrueFalseFromString(values[2]));
-        //System.out.println("After: " + alive);
         level = Integer.parseInt(values[2]);
     }
 

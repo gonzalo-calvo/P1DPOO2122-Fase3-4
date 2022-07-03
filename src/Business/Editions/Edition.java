@@ -82,35 +82,9 @@ public class Edition {
     }
 
 
-    /**
-     * Aquest mètode printa tota l'informació de la edició
-     */
-    public void printDetails(){
-        System.out.println("\nYear: " + editionYear);
-        System.out.println("Players: " + numPlayers);
-        System.out.println("Trials: ");
 
-        for (int i = 0; i < numTrials; i++) {
-            System.out.println("    " + (i+1) + "- " + editionsTrialsList.get(i).getName() + " (" + getTrialNameDetail(editionsTrialsList.get(i).getType()) + ")");
-        }
-    }
 
-    /**
-     * Aquest mètode printa el nom del tipos de trial depenent del tipos de trial
-     * @param type Tipos de trial a printar
-     * @return Retorna el text que ha de printar
-     */
-    public String getTrialNameDetail(int type){
 
-        return switch (type) {
-            case 1 -> "Paper publication";
-            case 2 -> "Master studies";
-            case 3 -> "Doctoral thesis defense";
-            case 4 -> "Budget request";
-            default -> "Should never see this message";
-        };
-
-    }
 
     /**
      * Aquest mètode busca si hi han jugadors que segueixen vius, es a dir, que tinguin mes d'un punt
@@ -209,14 +183,11 @@ public class Edition {
      * @param line String amb l'informació de l'edició
      */
     public void setEditionValuesFromCSV(String line) {
-        System.out.println("line is: " + line );
         String[] values = line.split(";");
         editionYear = Integer.parseInt(values[0]);
         numPlayers = Integer.parseInt(values[1]);
 
         String[] playerValues = values[2].split(":");
-        //System.out.println("length value of player values: " + playerValues.length);
-        //System.out.println("value of only element of player value: " + playerValues[0] + " :");
         if (!playerValues[0].equals("")) {
             for (String playerValue : playerValues) {
                 EngineerPlayer engineer = new EngineerPlayer();
@@ -254,7 +225,6 @@ public class Edition {
                     budgetRequestTrial.setValuesFromCSV(trialValue);
                     editionsTrialsList.add(budgetRequestTrial);
                 }
-                default -> System.out.println("No identification number for trial type");
             }
         }
 

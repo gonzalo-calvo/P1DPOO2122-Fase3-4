@@ -73,7 +73,6 @@ public class PaperPublicationTrial extends Trial {
      */
     public void setValuesFromCSV(String line){
         String[] values = line.split("_");
-        //System.out.println("line: " + line);
         name = values[1];
         journalName = values[2];
         quartile = Integer.parseInt(values[3]);

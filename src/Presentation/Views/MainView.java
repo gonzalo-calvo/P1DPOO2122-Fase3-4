@@ -195,7 +195,6 @@ public class MainView {
         do {
             System.out.print("\nPick a fiction: ");
             selection = scanner.nextLine();
-            //System.out.println("scanner has read: " + selection);
 
             if (selection.compareTo("I")==0){
                 flag = true;

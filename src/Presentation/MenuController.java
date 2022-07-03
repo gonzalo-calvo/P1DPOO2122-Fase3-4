@@ -1,6 +1,5 @@
 package Presentation;
 
-import Business.Editions.Edition;
 import Business.Editions.EditionsManager;
 import Business.Execution.ExecutionManager;
 import Business.Players.Player;
@@ -68,19 +67,15 @@ public class MenuController {
 
             for (int i = 0; i < editionsManager.getEditionsList().size(); i++) {
                 if (editionsManager.getEditionsList().get(i).getEditionYear() == year){
-                    System.out.println("We got the year");
                     foundEdition = true;
                     editionId = i;
                 }
             }
 
             if (executionManager.isThisYearsEditionExecuting()){
-                System.out.println("entro en 1");
                 executionManager.executeEdition();
             } else {
-                System.out.println("entro en 2");
                 if (foundEdition) {
-                    System.out.println("entro en 3");
                     executionManager.setEditionExecute(editionsManager.getEditionsList().get(editionId));
                     executionManager.executeEdition();
                 } else {
@@ -88,6 +83,11 @@ public class MenuController {
                 }
             }
 
+            if (!executionManager.isExecutionEnded()){
+                executionManager.saveExecutionToFile();
+            } else {
+                executionManager.clearEditionToExecute();
+            }
 
         }
 

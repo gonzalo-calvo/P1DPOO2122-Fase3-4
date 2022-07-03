@@ -42,7 +42,6 @@ public class BudgetRequestTrial extends Trial {
      */
     public void setValuesFromCSV(String line){
         String[] values = line.split("_");
-        //System.out.println("line: " + line);
         name = values[1];
         entityName = values[2];
         moneyAmount = Integer.parseInt(values[3]);

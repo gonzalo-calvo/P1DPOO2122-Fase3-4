@@ -18,7 +18,6 @@ public class EngineerPlayer extends Player {
      */
     @Override
     public void addPoints(int points, int trial_type){
-        System.out.println("Add points EngineerPlayer");
         if(points > 0){ // WIN
             if(trial_type == this.level+1){
                 this.investigationPoints = 10;

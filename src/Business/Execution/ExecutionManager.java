@@ -27,6 +27,8 @@ public class ExecutionManager {
 
     private Edition editionExecute;
 
+    private boolean executionEnded;
+
 
     public ExecutionManager(){
 
@@ -41,8 +43,12 @@ public class ExecutionManager {
 
     public void setEditionExecute(Edition editionExecute) {
         this.editionExecute = new Edition(editionExecute.getEditionYear(), editionExecute.getNumPlayers(), editionExecute.getNumTrials(), editionExecute.getEditionsTrialsList(), editionExecute.getPlayerList(), editionExecute.getTrialExecuting());
+        executionEnded = false;
     }
 
+    public boolean isExecutionEnded() {
+        return executionEnded;
+    }
 
     /**
      * Mètode general que s'encarrega d'executar la edició
@@ -51,12 +57,12 @@ public class ExecutionManager {
 
         String continueExecution = "yes";
 
-        System.out.println("\n--- The Trials " + editionExecute.getEditionYear() + " ---\n");
+        menuController.printSingleLine("\n--- The Trials " + editionExecute.getEditionYear() + " ---\n");
 
         if (editionExecute.getPlayerList().isEmpty()) {   //if empty --> first time executing
             for (int i = 0; i < editionExecute.getNumPlayers(); i++) {
                 EngineerPlayer auxEngineer = new EngineerPlayer();
-                auxEngineer.setName(askUserNonEmptyString("Enter the player’s name (" + (i + 1) + "/" + editionExecute.getNumPlayers() + "): "));
+                auxEngineer.setName(executionView.askUserNonEmptyString("Enter the player’s name (" + (i + 1) + "/" + editionExecute.getNumPlayers() + "): "));
                 auxEngineer.setInvestigationPoints(5);
                 auxEngineer.setLevel(1);
                 editionExecute.getPlayerList().add(auxEngineer);
@@ -68,8 +74,8 @@ public class ExecutionManager {
         }
 
         while (editionExecute.getNumTrials()>editionExecute.getTrialExecuting() && continueExecution.equals("yes") && editionExecute.isAnyoneAlive()){
-
-            System.out.println("\nTrial #" + (editionExecute.getTrialExecuting()+1) + " - " + editionExecute.getEditionsTrialsList().get(editionExecute.getTrialExecuting()).getName() + "\n");
+            executionEnded = false;
+            menuController.printSingleLine("\nTrial #" + (editionExecute.getTrialExecuting()+1) + " - " + editionExecute.getEditionsTrialsList().get(editionExecute.getTrialExecuting()).getName() + "\n");
 
             switch (editionExecute.getEditionsTrialsList().get(editionExecute.getTrialExecuting()).getType()){
                 case 1:
@@ -100,31 +106,25 @@ public class ExecutionManager {
                     submitTeamInBudgetRequest(editionExecute, editionExecute.getTrialExecuting());
                     break;
 
-                default:
-                    System.out.println("Error de switch escogiendo tipo de trial. Valor switch: " + editionExecute.getEditionsTrialsList().get(editionExecute.getTrialExecuting()).getType());
             }
 
-            System.out.println("\nUpdating player evolution");
             updatePlayerEvolution(editionExecute);
 
             editionExecute.setTrialExecuting(editionExecute.getTrialExecuting()+1);
 
             if ((editionExecute.getNumTrials()==editionExecute.getTrialExecuting())) {
-                System.out.println("\nTHE TRIALS 2021 HAVE ENDED " + editionExecute.howManyFinishers() + " PLAYERS WON");
-                clearEditionToExecute();
+                menuController.printSingleLine("\nTHE TRIALS 2021 HAVE ENDED " + editionExecute.howManyFinishers() + " PLAYERS WON");
+                executionEnded = true;
             } else {
                 continueExecution = menuController.askUserYesNo();
             }
         }
 
         if (!editionExecute.isAnyoneAlive()){
-            System.out.println("\nTHE TRIALS 2021 HAVE ENDED IN FAILURE - 0 PLAYERS ENDED");
-            clearEditionToExecute();
+            menuController.printSingleLine("\nTHE TRIALS 2021 HAVE ENDED IN FAILURE - 0 PLAYERS ENDED");
+            executionEnded = true;
         }
 
-        if (continueExecution.equals("no")){
-            executionDAO.saveExecutionToFile(editionExecute);
-        }
     }
 
     /**
@@ -143,16 +143,13 @@ public class ExecutionManager {
                     case 1 -> {
                         MasterPlayer mp = new MasterPlayer(auxPlayer.getName(), 2, 5);
                         edition.getPlayerList().set(i,mp);  //intercambia el objeto de ingeniero por uno tipo master en la posicion de i
-                        System.out.println(mp.getName() + " is now a master (with 5 PI).");
+                        menuController.printSingleLine(mp.getName() + " is now a master (with 5 PI).");
                     }
                     case 2 -> {
                         DoctorPlayer dp = new DoctorPlayer(auxPlayer.getName(), 3, 5);
                         edition.getPlayerList().set(i,dp);
-                        System.out.println(dp.getName() + " is now a doctor (with 5 PI).");
+                        menuController.printSingleLine(dp.getName() + " is now a doctor (with 5 PI).");
                     }
-                    case 3 -> {
-                    }
-                    default -> System.out.println("Error en update player evolution. Switch value es: " + edition.getPlayerList().get(i).getLevel());
                 }
             }
         }
@@ -173,12 +170,7 @@ public class ExecutionManager {
         int quartile = paperPublicationTrial.getQuartile();
         String result;
 
-        switch (edition.getPlayerList().get(playerID).getLevel()){
-            case 1 -> System.out.print("    " + edition.getPlayerList().get(playerID).getName() + " is submitting... ");
-            case 2 -> System.out.print("    Master " + edition.getPlayerList().get(playerID).getName() + " is submitting... ");
-            case 3 -> System.out.print("    " + edition.getPlayerList().get(playerID).getName() + ", PhD" + " is submitting... ");
-            default -> System.out.println("Error: The player level is: " + edition.getPlayerList().get(playerID).getLevel());
-        }
+        executionView.printTrialExecutionDetails(edition.getPlayerList().get(playerID).getLevel(), edition, playerID);
 
         do{
             result = getRandomDecisionPaperPublication(acc,rev);
@@ -186,23 +178,24 @@ public class ExecutionManager {
             switch (result) {
                 case "Accepted" -> {
                     edition.getPlayerList().get(playerID).addPoints(getRewardOrPenaltyPaperPublication(quartile,"+"),1);
-                    System.out.println("Accepted! PI count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
+                    menuController.printSingleLine("Accepted! PI count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
                 }
-                case "Revisions" -> System.out.print("Revisions... ");
+                case "Revisions" -> menuController.printSingleLine("Revisions... ");
                 case "Rejected" -> {
                     edition.getPlayerList().get(playerID).addPoints(getRewardOrPenaltyPaperPublication(quartile,"-"),1);
                     if (edition.getPlayerList().get(playerID).getInvestigationPoints() <= 0) {
                         edition.getPlayerList().get(playerID).setInvestigationPoints(0);
-                        System.out.println("Rejected. PI count: 0 - Disqualified!");
+                        menuController.printSingleLine("Rejected. PI count: 0 - Disqualified!");
                     } else {
-                        System.out.println("Rejected. PI count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
+                        menuController.printSingleLine("Rejected. PI count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
                     }
                 }
-                default -> System.out.println("ERROR Submit player paper publication trial. Value of getRandomDecisionPaperPublication is: " + result);
             }
         } while (result.equals("Revisions"));
 
     }
+
+
 
     /**
      * Mètode que sotmet al jugador a la trial de tipos master studies
@@ -216,26 +209,23 @@ public class ExecutionManager {
 
         int numCredits = masterStudiesTrial.getCreditNum(), passProbability = masterStudiesTrial.getPassProbability(), creditsPassed;
 
-        switch (edition.getPlayerList().get(playerID).getLevel()){
-            case 1 -> System.out.print(edition.getPlayerList().get(playerID).getName() + " ");
-            case 2 -> System.out.print("Master " + edition.getPlayerList().get(playerID).getName() + " ");
-            case 3 -> System.out.print(edition.getPlayerList().get(playerID).getName() + ", PhD ");
-        }
+        executionView.printTrialExecutionDetails(edition.getPlayerList().get(playerID).getLevel(), edition, playerID);
+
 
         creditsPassed = willMasterStudiesPass(numCredits, passProbability);
 
         if (creditsPassed >= (numCredits/2)){
             edition.getPlayerList().get(playerID).addPoints(3,2);
-            System.out.println("passed " + creditsPassed + "/" + numCredits + " ECTS. Congrats! PI count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
+            menuController.printSingleLine("passed " + creditsPassed + "/" + numCredits + " ECTS. Congrats! PI count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
 
         } else {
 
             if (edition.getPlayerList().get(playerID).getInvestigationPoints() <= 3) {
                 edition.getPlayerList().get(playerID).setInvestigationPoints(0);
-                System.out.println("passed " + creditsPassed + "/" + numCredits + " ECTS. Sorry... PI count: 0 - Disqualified!");
+                menuController.printSingleLine("passed " + creditsPassed + "/" + numCredits + " ECTS. Sorry... PI count: 0 - Disqualified!");
             } else {
                 edition.getPlayerList().get(playerID).addPoints(-3,2);
-                System.out.println("passed " + creditsPassed + "/" + numCredits + " ECTS. Sorry... PI count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
+                menuController.printSingleLine("passed " + creditsPassed + "/" + numCredits + " ECTS. Sorry... PI count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
             }
 
         }
@@ -252,11 +242,7 @@ public class ExecutionManager {
 
         double result=0;
 
-        switch (edition.getPlayerList().get(playerID).getLevel()){
-            case 1 -> System.out.print(edition.getPlayerList().get(playerID).getName() + " ");
-            case 2 -> System.out.print("Master " + edition.getPlayerList().get(playerID).getName() + " ");
-            case 3 -> System.out.print(edition.getPlayerList().get(playerID).getName() + ", PhD ");
-        }
+        executionView.printTrialExecutionDetails(edition.getPlayerList().get(playerID).getLevel(), edition, playerID);
 
         for (int i = 0; i < doctoralThesisDefenseTrial.getDifficulty(); i++) {
             result = result + (2*(i+1) - 1);
@@ -266,17 +252,17 @@ public class ExecutionManager {
 
         if (edition.getPlayerList().get(playerID).getInvestigationPoints() >= result){
             edition.getPlayerList().get(playerID).addPoints(5,3);
-            System.out.println("was successful. Congrats! Pi count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
+            menuController.printSingleLine("was successful. Congrats! Pi count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
         } else {
             if (edition.getPlayerList().get(playerID).getInvestigationPoints() <= 5) {
                 edition.getPlayerList().get(playerID).setInvestigationPoints(0);
-                System.out.println("was unsuccessful. Sorry... Pi count: 0 - Disqualified!");
+                menuController.printSingleLine("was unsuccessful. Sorry... Pi count: 0 - Disqualified!");
             } else {
                 edition.getPlayerList().get(playerID).addPoints(-5, 3);
-                System.out.println("was unsuccessful. Sorry... Pi count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
+                menuController.printSingleLine("was unsuccessful. Sorry... Pi count: " + edition.getPlayerList().get(playerID).getInvestigationPoints());
             }
         }
-        System.out.println("Result of puntuation: " + result);
+        menuController.printSingleLine("Result of puntuation: " + result);
 
     }
 
@@ -296,24 +282,24 @@ public class ExecutionManager {
         }
 
         if (suma >= Math.log(budgetRequestTrial.getMoneyAmount())/Math.log(2)){
-            System.out.println("The research group got the budget!");
+            menuController.printSingleLine("The research group got the budget!");
             for (int i = 0; i < edition.getPlayerList().size(); i++) {
                 if (edition.getPlayerList().get(i).isAlive()){
                     switch (edition.getPlayerList().get(i).getLevel()){
-                        case 1 -> System.out.print(edition.getPlayerList().get(i).getName());
-                        case 2 -> System.out.print("Master " + edition.getPlayerList().get(i).getName());
-                        case 3 -> System.out.print(edition.getPlayerList().get(i).getName() + ", PhD");
+                        case 1 -> menuController.printSingleLine(edition.getPlayerList().get(i).getName());
+                        case 2 -> menuController.printSingleLine("Master " + edition.getPlayerList().get(i).getName());
+                        case 3 -> menuController.printSingleLine(edition.getPlayerList().get(i).getName() + ", PhD");
                     }
                     //edition.getPlayerList().get(i).setTrialPass(true);
                     edition.getPlayerList().get(i).setInvestigationPoints(edition.getPlayerList().get(i).getInvestigationPoints() + getRewardBudgetRequest(edition, i));
-                    System.out.println(". PI count: " + edition.getPlayerList().get(i).getInvestigationPoints());
+                    menuController.printSingleLine(". PI count: " + edition.getPlayerList().get(i).getInvestigationPoints());
                 }
             }
         }else{
             for (int i = 0; i < edition.getNumPlayers(); i++) {
-                System.out.println("\nThe research group didn't get the budget!");
+                menuController.printSingleLine("\nThe research group didn't get the budget!");
                 edition.getPlayerList().get(i).setInvestigationPoints(edition.getPlayerList().get(i).getInvestigationPoints() - 2);
-                System.out.println(". PI count: " + edition.getPlayerList().get(i).getInvestigationPoints());
+                menuController.printSingleLine(". PI count: " + edition.getPlayerList().get(i).getInvestigationPoints());
             }
         }
     }
@@ -337,7 +323,7 @@ public class ExecutionManager {
         } else if (decision > (acc + rev)){
             return "Rejected";
         } else {
-            System.out.println("value of acceptance is: " + acc + " and value of revision is: " + rev);
+            menuController.printSingleLine("value of acceptance is: " + acc + " and value of revision is: " + rev);
             return String.valueOf(decision);
         }
     }
@@ -384,10 +370,8 @@ public class ExecutionManager {
 
         for (int i = 0; i < numCredits; i++) {
             pass = rand.nextInt(100);
-            //System.out.println("Pass[" + i + "] = " + pass);
             if (pass<passProbability){
                 creditsPassed++;
-                //System.out.println("Total credit passed = " + creditsPassed);
             }
         }
 
@@ -412,30 +396,18 @@ public class ExecutionManager {
 
     }
 
-    /**
-     * Mètode que demana a l'usuari una string que no sigui vuida
-     * @param text Text a printar per pantalla
-     * @return Retorna la string introduida per l'usuari
-     */
-    private String askUserNonEmptyString(String text){
-
-        Scanner scanner = new Scanner(System.in);
-        System.out.print(text );
-
-        return scanner.next();
-    }
-
-    private void clearEditionToExecute(){
+    public void clearEditionToExecute(){
         editionExecute.setEditionYear(0);
         editionExecute.setNumTrials(0);
         editionExecute.setEditionsTrialsList(null);
         editionExecute.setNumPlayers(0);
         editionExecute.setPlayerList(null);
         editionExecute.setTrialExecuting(0);
+        executionDAO.eraseExecutionFile();
     }
 
 
-    public void saveExecutionsListToFile() {
+    public void saveExecutionToFile() {
         executionDAO.saveExecutionToFile(this.editionExecute);
     }
 

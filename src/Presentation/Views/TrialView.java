@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 public class TrialView {
 
+    public TrialView() {
+    }
 
     public void printCreateTrialMenu() {
         System.out.println("\n    --- Trial types ---\n");

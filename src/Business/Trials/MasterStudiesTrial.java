@@ -53,7 +53,6 @@ public class MasterStudiesTrial extends Trial {
      */
     public void setValuesFromCSV(String line){
         String[] values = line.split("_");
-        //System.out.println("line: " + line);
         name = values[1];
         masterName = values[2];
         creditNum = Integer.parseInt(values[3]);

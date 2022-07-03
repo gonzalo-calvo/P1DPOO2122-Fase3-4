@@ -10,4 +10,6 @@ public interface ExecutionDAO {
 
     Edition getExecutionFromFile();
 
+    void eraseExecutionFile();
+
 }
